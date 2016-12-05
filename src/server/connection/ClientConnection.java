@@ -72,39 +72,32 @@ public class ClientConnection extends Thread {
 		String commandName = this.extractCommandName(commandString);
 
 		if (null == commandString) {
-			this.print("ClientConnection.process(): Fehler: Kommandoname konnte nicht erkannt werden.");
+			this.applicationState.getOutput().println(
+					"ClientConnection.process(): Fehler: Kommandoname konnte nicht erkannt werden."
+			);
 			return;
 		}
 
 		ArrayList<String> parameters = this.extractCommandParameters(commandString);
 
 		try {
-			this.print("ClientConnection.process(): " + commandName + " wird ausgeführt. Parameter: " + parameters
-					.toString());
+			this.applicationState.getOutput().println(
+					"ClientConnection.process(): " + commandName + " wird ausgeführt. Parameter: " + parameters
+					.toString()
+			);
 			this.commandFactory.createCommand(
 					this,
 					commandName,
 					parameters
 			).execute();
 		} catch (Exception e) {
-			this.applicationState
-					.getOutput()
-					.println(
-							"ClientConnection.process(): Fehler: \""
-									+ commandName
-									+ "\" konnte nicht "
-									+ "richtig ausgeführt werden!"
-					);
+			this.applicationState.getOutput().println(
+					"ClientConnection.process(): Fehler: \""
+							+ commandName
+							+ "\" konnte nicht "
+							+ "richtig ausgeführt werden!"
+			);
 		}
-	}
-
-	/**
-	 * Gibt eine Nachricht aus.
-	 *
-	 * @param msg - Nachricht die ausgegeben werden soll.
-	 */
-	private void print(String msg) {
-		this.applicationState.getOutput().println(msg);
 	}
 
 	/**
