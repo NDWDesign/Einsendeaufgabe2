@@ -2,6 +2,7 @@ package server.connection;
 
 import common.ApplicationState;
 import common.CommandFactory;
+import common.commands.CommandInterface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class ClientConnection extends Thread {
 					this,
 					commandName,
 					parameters
-			).run();
+			).execute();
 		} catch (Exception e) {
 			this.applicationState.getOutput()
 			                     .println("Fehler: " + commandName + " konnte nicht richtig ausgeführt werden!");
@@ -129,12 +130,12 @@ public class ClientConnection extends Thread {
 	}
 
 	/**
-	 * Sendet eine Nachricht
+	 * Sendet ein Kommando
 	 *
-	 * @param msg - Die Nachricht die gesendet werden soll
+	 * @param command - Das Kommando die gesendet werden soll
 	 */
-	public void send(String msg) {
-		output.println(msg);
+	public void send(CommandInterface command) {
+		output.print(command.serialize());
 		output.flush();
 	}
 
