@@ -10,20 +10,30 @@ import java.util.ArrayList;
  *
  * @author Nils Daniel Wittwer
  */
-public class SetPlayerName extends AbstractCommand implements Runnable {
+public class SetPlayerName implements CommandInterface {
 
-	public SetPlayerName(
-			ApplicationState applicationState,
-			ClientConnection clientConnection,
-			ArrayList<String> parameters
-	) {
-		super(applicationState, clientConnection, parameters);
-	}
-
+	private ApplicationState applicationState;
+	private ClientConnection clientConnection;
+	private String playerName;
 
 	@Override
-	public void run() {
+	public void execute() {
+		this.clientConnection.setPlayerName(this.playerName);
+	}
 
-		this.clientConnection.setPlayerName(this.parameters.get(0));
+	@Override
+	public String serialize() {
+		return "<command name=\"SetPlayerName\">\n"
+				+ "<parameter>"
+				+ this.playerName
+				+ "</parameter>"
+				+ "</command>";
+	}
+
+	@Override
+	public void loadParameters(
+			ApplicationState applicationState, ClientConnection clientConnection, ArrayList<String> parameters
+	) {
+		this.playerName = parameters.get(0);
 	}
 }

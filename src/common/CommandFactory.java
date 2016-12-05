@@ -1,7 +1,6 @@
 package common;
 
-import common.commands.Disconnect;
-import common.commands.SetPlayerName;
+import common.commands.*;
 import server.connection.ClientConnection;
 
 import java.util.ArrayList;
@@ -27,26 +26,31 @@ public class CommandFactory {
 	 * @param commandName      - Name des Kommandos.
 	 * @param parameters       - Eventuell für das Kommando benötigte Parameter.
 	 *
-	 * @return AbstractCommand
+	 * @return CommandInterface
 	 */
-	public Runnable createCommand(
+	public CommandInterface createCommand(
 			ClientConnection clientConnection,
 			String commandName,
 			ArrayList<String> parameters
 	) {
 
+		CommandInterface command = null;
 		try {
 			switch (commandName) {
 				case "disconnect":
-					return new Disconnect(this.applicationState, clientConnection, parameters);
+					command = new Disconnect();
 				case "setPlayerName":
-					return new SetPlayerName(this.applicationState, clientConnection, parameters);
+					command = new SetPlayerName();
 			}
 		} catch (Exception e) {
 			applicationState.getOutput().println("Fehler: " + commandName + " konnte nicht instanziiert werden!");
 			e.getStackTrace();
 		}
 
-		return null;
+		if (null != command) {
+			command.loadParameters(this.applicationState, clientConnection, parameters);
+		}
+
+		return command;
 	}
 }

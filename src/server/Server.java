@@ -3,7 +3,6 @@ package server;
 import common.ApplicationState;
 import common.Events.EventHandler;
 import common.Factory;
-import server.connection.ClientConnectionHandler;
 
 /**
  * Einsendeaufgabe2 04.12.2016

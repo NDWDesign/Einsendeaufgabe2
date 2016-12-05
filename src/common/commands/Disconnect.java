@@ -3,7 +3,6 @@ package common.commands;
 import common.ApplicationState;
 import server.connection.ClientConnection;
 
-import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
@@ -11,18 +10,25 @@ import java.util.ArrayList;
  *
  * @author Nils Daniel Wittwer
  */
-public class Disconnect extends AbstractCommand {
+public class Disconnect implements CommandInterface {
 
-	public Disconnect(
-			ApplicationState applicationState,
-			ClientConnection clientConnection,
-			ArrayList<String> parameters
-	) {
+	private ApplicationState applicationState;
+	private ClientConnection clientConnection;
 
-		super(applicationState, clientConnection, parameters);
+	@Override
+	public String serialize() {
+		return "<command name=\"disconnect\"></command>";
 	}
 
-	public void run() {
+	@Override
+	public void loadParameters(
+			ApplicationState applicationState, ClientConnection clientConnection, ArrayList<String> parameters
+	) {
+		this.applicationState = applicationState;
+		this.clientConnection = clientConnection;
+	}
+
+	public void execute() {
 
 		this.applicationState.getOutput().println("Unterbreche Verbindung!");
 		this.clientConnection.interrupt();
