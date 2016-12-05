@@ -43,11 +43,12 @@ public class CommandFactory {
 					command = new SetPlayerName();
 			}
 		} catch (Exception e) {
-			applicationState.getOutput().println("Fehler: " + commandName + " konnte nicht instanziiert werden!");
+			applicationState.getOutput().println("CommandFactory.createCommand(): Fehler: \"" + commandName + "\" konnte nicht instantiiert werden!");
 			e.getStackTrace();
 		}
 
 		if (null != command) {
+			applicationState.getOutput().println("CommandFactory.createCommand(): Kommando \"" + commandName + "\" erstellt. Übergebe Parameter.");
 			command.loadParameters(this.applicationState, clientConnection, parameters);
 		}
 

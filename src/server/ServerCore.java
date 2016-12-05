@@ -1,7 +1,8 @@
 package server;
 
+import common.ApplicationState;
 import common.Events.ClientConnected;
-import common.Events.EventHandler;
+import common.Events.EventManager;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,12 +14,14 @@ import java.net.ServerSocket;
  */
 public class ServerCore extends Thread {
 
-	private EventHandler eventHandler;
+	private final ApplicationState applicationState;
+	private EventManager eventHandler;
 
 	private ServerSocket serverSocket;
 
-	public ServerCore(EventHandler eventHandler, int port)  {
+	public ServerCore(ApplicationState applicationState, EventManager eventHandler, int port)  {
 
+		this.applicationState = applicationState;
 		this.eventHandler = eventHandler;
 
 		try {
@@ -32,7 +35,7 @@ public class ServerCore extends Thread {
 
 		try {
 			while (!currentThread().isInterrupted()) {
-
+				this.applicationState.getOutput().println("ServerCore.run(): Listening for new connections...");
 				eventHandler.dispatch(
 						new ClientConnected(serverSocket.accept())
 				);

@@ -15,14 +15,11 @@ import java.io.IOException;
  */
 public class ClientConnectionHandler implements ListenerInterface {
 
-	private final CommandFactory commandFactory;
-
 	private ApplicationState applicationState;
 
-	public ClientConnectionHandler(ApplicationState applicationState, CommandFactory commandFactory) {
+	public ClientConnectionHandler(ApplicationState applicationState) {
 
 		this.applicationState = applicationState;
-		this.commandFactory = commandFactory;
 	}
 
 	public void run(EventInterface event) {
@@ -30,9 +27,24 @@ public class ClientConnectionHandler implements ListenerInterface {
 		ClientConnected clientConnectedEvent = (ClientConnected) event;
 
 		try {
-			this.applicationState.getClientConnections().add(
-					new ClientConnection(this.applicationState, this.commandFactory, clientConnectedEvent.getSocket())
-			);
+			this.applicationState
+					.getOutput()
+					.println("ClientConnectionHandler.run(): Trying to setup new ClientConnection");
+
+			ClientConnection newClientConnection = this.applicationState
+					.getFactory()
+					.createClientConnection(
+							clientConnectedEvent.getSocket(),
+							true
+					);
+
+			this.applicationState.getClientConnections().add(newClientConnection);
+
+			this.applicationState
+					.getOutput()
+					.println("ClientConnectionHandler.run(): Starting new ClientConnection");
+			newClientConnection.run();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

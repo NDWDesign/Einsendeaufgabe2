@@ -1,7 +1,7 @@
 package server;
 
 import common.ApplicationState;
-import common.Events.EventHandler;
+import common.Events.EventManager;
 import common.Factory;
 
 /**
@@ -11,22 +11,25 @@ import common.Factory;
  */
 public class Server {
 
-	public static void main() {
-
+	public static void main(String[] args) {
 		ApplicationState applicationState = new ApplicationState();
-		Factory factory = new Factory(applicationState);
 
-		registerEventListeners(factory);
+		applicationState.getOutput().println("Server.main(): Creating factory...");
+		applicationState.setFactory(new Factory(applicationState));
 
-		factory.getServerCore(false).run();
+		applicationState.getOutput().println("Server.main(): Registering event listeners...");
+		registerEventListeners(applicationState.getFactory());
+
+		applicationState.getOutput().println("Server.main(): Starting server core...");
+		applicationState.getFactory().createServerCore(false).run();
 	}
 
 	private static void registerEventListeners(Factory factory) {
 
-		EventHandler eventHandler = factory.getEventHandler(false);
+		EventManager eventManager = factory.createEventHandler(false);
 
-		eventHandler.register("clientConnected",
-				factory.getClientConnectionHandler(false)
+		eventManager.register("ClientConnected",
+				factory.createClientConnectionHandler(false)
 		);
 	}
 }

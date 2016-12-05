@@ -19,6 +19,8 @@ public class ApplicationState {
 
 	private final PrintStream output = System.out;
 
+	private Factory factory;
+
 
 	public PrintStream getOutput() {
 		return output;
@@ -26,5 +28,14 @@ public class ApplicationState {
 
 	public List<ClientConnection> getClientConnections() {
 		return clientConnections;
+	}
+
+	public Factory getFactory() {
+
+		return factory;
+	}
+
+	public void setFactory(Factory factory) {
+		this.factory = factory;
 	}
 }

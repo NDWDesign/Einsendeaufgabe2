@@ -1,5 +1,6 @@
 package common.Events;
 
+import common.ApplicationState;
 import common.Events.EventInterface;
 
 import java.util.ArrayList;
@@ -11,7 +12,14 @@ import java.util.Map;
  *
  * @author Nils Daniel Wittwer
  */
-public class EventHandler {
+public class EventManager {
+
+	private final ApplicationState applicationState;
+
+	public EventManager(ApplicationState applicationState) {
+
+		this.applicationState = applicationState;
+	}
 
 	/**
 	 * Speichert die registrierten Event-Listener geordnet nach Event-Klasse
@@ -27,8 +35,16 @@ public class EventHandler {
 	public void register(String eventClassName, ListenerInterface listener) {
 
 		if (!this.listeners.containsKey(eventClassName)) {
+			applicationState.getOutput().println("EventManager.register(): New EventName \"" + eventClassName + "\"");
 			this.listeners.put(eventClassName, new ArrayList<ListenerInterface>());
 		}
+		applicationState.getOutput().println(
+				"EventManager.register(): Registering listner \""
+						+ listener.getClass().getSimpleName()
+						+ "\" for Event \""
+						+ eventClassName
+						+ "\""
+		);
 		this.listeners.get(eventClassName).add(listener);
 
 	}
@@ -39,8 +55,12 @@ public class EventHandler {
 	 * @param event - Event das an die Listener weitergeleitet werden soll.
 	 */
 	public void dispatch(EventInterface event) {
-
+		applicationState.getOutput()
+		                .println("EventManager.dispatch(): Dispatching \"" + event.getClass().getSimpleName() + "\"");
 		for (ListenerInterface listener : listeners.get(event.getClass().getSimpleName())) {
+			applicationState.getOutput()
+			                .println("EventManager.dispatch(): Running \"" + listener.getClass()
+			                                                                         .getSimpleName() + "\"");
 			listener.run(event);
 		}
 	}

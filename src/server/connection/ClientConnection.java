@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * ClientConnection - Managed die Verbindung zu einem Spieler
@@ -28,7 +30,7 @@ public class ClientConnection extends Thread {
 
 	private CommandFactory commandFactory;
 
-	ClientConnection(
+	public ClientConnection(
 			ApplicationState applicationState,
 			CommandFactory commandFactory,
 			Socket socket
@@ -47,6 +49,7 @@ public class ClientConnection extends Thread {
 
 		try {
 			while (!currentThread().isInterrupted()) {
+				this.applicationState.getOutput().println("ClientConnection.processCommand(): Warte auf Kommando");
 				this.processCommand();
 			}
 		} catch (IOException e) {
@@ -60,21 +63,38 @@ public class ClientConnection extends Thread {
 	private void processCommand() throws IOException {
 
 		String commandString = this.readCommandString();
+		this.applicationState.getOutput().println(
+				"ClientConnection.processCommand(): Neues Kommando erkannt: \""
+						+ commandString
+						+ "\""
+		);
 
 		String commandName = this.extractCommandName(commandString);
+
+		if (null == commandString) {
+			this.print("ClientConnection.process(): Fehler: Kommandoname konnte nicht erkannt werden.");
+			return;
+		}
+
 		ArrayList<String> parameters = this.extractCommandParameters(commandString);
 
-		this.print(commandName + " wird ausgeführt. Parameter: " + parameters.toString());
-
 		try {
+			this.print("ClientConnection.process(): " + commandName + " wird ausgeführt. Parameter: " + parameters
+					.toString());
 			this.commandFactory.createCommand(
 					this,
 					commandName,
 					parameters
 			).execute();
 		} catch (Exception e) {
-			this.applicationState.getOutput()
-			                     .println("Fehler: " + commandName + " konnte nicht richtig ausgeführt werden!");
+			this.applicationState
+					.getOutput()
+					.println(
+							"ClientConnection.process(): Fehler: \""
+									+ commandName
+									+ "\" konnte nicht "
+									+ "richtig ausgeführt werden!"
+					);
 		}
 	}
 
@@ -107,7 +127,6 @@ public class ClientConnection extends Thread {
 
 	/**
 	 * Extrahiert den Namen des Kommandos aus dem übergebenen String
-	 * TODO: Methode implementieren
 	 *
 	 * @param commandString - String mit vollständiger Definition des Kommandos
 	 *
@@ -115,18 +134,30 @@ public class ClientConnection extends Thread {
 	 */
 	private String extractCommandName(String commandString) {
 
-		return "";
+		Pattern pattern = Pattern.compile("(?i)<command.*name=\"(?<commandName>.*)\".*>");
+		Matcher matcher = pattern.matcher(commandString);
+		if (matcher.find()) {
+			return matcher.group("commandName");
+		}
+		return null;
 	}
 
 	/**
 	 * Extrahiert die Parameter aus dem übergebenen String
-	 * TODO: Methode implementieren
 	 *
 	 * @param commandString - String mit vollständiger Definition des Kommandos
 	 */
 	private ArrayList<String> extractCommandParameters(String commandString) {
 
-		return new ArrayList<String>();
+		Pattern pattern = Pattern.compile("(?i)<parameter>(?<parameterValue>.*)</parameter>");
+		Matcher matcher = pattern.matcher(commandString);
+
+		ArrayList<String> parameters = new ArrayList<String>();
+		while (matcher.find()) {
+			parameters.add(matcher.group("parameterValue"));
+		}
+
+		return parameters;
 	}
 
 	/**
