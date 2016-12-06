@@ -35,19 +35,18 @@ public class ConnectionRequestHandler implements ListenerInterface {
 			this.output
 					.println("ConnectionRequestHandler.run(): Versuche neue Verbingung zu etablieren...");
 
-			Connection newConnection = this.factory
-					.createConnection(
+			Connection connection = this.factory.createConnection(
 							connectionRequestedEvent.getSocket(),
 							true
 					);
 
-			this.applicationState.getConnections().add(newConnection);
+			this.applicationState.getConnections().add(connection);
 
 			this.output.println("ConnectionRequestHandler.run(): Starte neue Verbindung");
-			newConnection.run();
+			new Thread(connection);
 
 			this.eventManager.dispatch(
-					new ConnectionEstablished(newConnection)
+					new ConnectionEstablished(connection)
 			);
 
 		} catch (IOException e) {

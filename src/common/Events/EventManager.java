@@ -38,11 +38,11 @@ public class EventManager {
 	public void register(String eventClassName, ListenerInterface listener) {
 
 		if (!this.listeners.containsKey(eventClassName)) {
-			applicationState.getOutput().println("EventManager.register(): New EventName \"" + eventClassName + "\"");
+			this.output.println("EventManager.register(): Neues Event \"" + eventClassName + "\"");
 			this.listeners.put(eventClassName, new ArrayList<ListenerInterface>());
 		}
-		applicationState.getOutput().println(
-				"EventManager.register(): Registering listner \""
+		this.output.println(
+				"EventManager.register(): Registeriere Event-Listner \""
 						+ listener.getClass().getSimpleName()
 						+ "\" for Event \""
 						+ eventClassName
@@ -58,21 +58,33 @@ public class EventManager {
 	 * @param event - Event das an die Listener weitergeleitet werden soll.
 	 */
 	public void dispatch(EventInterface event) {
-		applicationState.getOutput()
-		                .println("EventManager.dispatch(): Dispatching \"" + event.getClass().getSimpleName() + "\"");
+		this.output.println("EventManager.dispatch(): Dispatche Event \"" + event.getClass()
+		                                                                         .getSimpleName() + "\"...");
 		try {
 			for (ListenerInterface listener : listeners.get(event.getClass().getSimpleName())) {
-				applicationState.getOutput()
-				                .println("EventManager.dispatch(): Running \"" + listener.getClass()
-				                                                                         .getSimpleName() + "\"");
-				listener.run(event);
+				if (null == listener) {
+					this.output.println(
+							"EventManager.dispatch(): Leerer Eintrag für Event \""
+							+ event.getClass().getSimpleName()
+							+ "\""
+					);
+				}
+				else {
+					this.output.println(
+							"EventManager.dispatch(): Führe Event-Listener \""
+									+ listener.getClass().getSimpleName()
+									+ "\" aus...");
+					listener.run(event);
+				}
 			}
 		} catch (Exception e) {
 
 			this.output.println(
-					"EventManager.dispatch(): Fehler! Konnte keine Einträge für Event \""
+					"EventManager.dispatch(): Fehler beim Dispatchen von Event \""
 							+ event.getClass().getSimpleName()
-							+ "\"finden!"
+							+ "\" ("
+							+ e.getMessage()
+							+ ")"
 			);
 		}
 	}

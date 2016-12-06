@@ -11,9 +11,9 @@ public class ConnectionRequested implements EventInterface {
 
 	private Socket socket;
 
-	public ConnectionRequested(Socket clientSocket) {
+	public ConnectionRequested(Socket socket) {
 
-		this.socket = clientSocket;
+		this.socket = socket;
 	}
 
 	public Socket getSocket() {

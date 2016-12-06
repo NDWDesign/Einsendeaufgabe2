@@ -39,8 +39,10 @@ public class CommandFactory {
 			switch (commandName) {
 				case "disconnect":
 					command = new Disconnect();
+					break;
 				case "setPlayerName":
 					command = new SetPlayerName();
+					break;
 			}
 		} catch (Exception e) {
 			applicationState.getOutput().println("CommandFactory.createCommand(): Fehler: \"" + commandName + "\" konnte nicht instantiiert werden!");

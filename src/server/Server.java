@@ -19,6 +19,7 @@ public class Server {
 
         applicationState.getOutput().println("Server.main(): Erstelle Factory...");
         Factory factory = new Factory(applicationState);
+		applicationState.setFactory(factory);
 
         applicationState.getOutput().println("Server.main(): Registriere Event-Listeners...");
         new EventRegistry(factory, factory.createEventManager(false)).run();
