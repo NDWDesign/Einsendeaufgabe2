@@ -1,5 +1,6 @@
 package server;
 
+import common.Events.ConnectionRequested;
 import common.Events.EventManager;
 import common.Factory;
 
@@ -19,7 +20,7 @@ class EventRegistry implements Runnable {
 
     public void run() {
 
-        eventManager.register("ConnectionRequested",
+        eventManager.register(ConnectionRequested.class.getSimpleName(),
                 factory.createClientConnectionHandler(false)
         );
     }

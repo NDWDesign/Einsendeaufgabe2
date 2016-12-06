@@ -15,6 +15,9 @@ public interface CommandInterface {
 	/** Führt das Kommando aus **/
 	void execute();
 
+	/** Sendet das Kommando über die enthaltene Verbindung */
+	void send();
+
 	/**
 	 * Serialisiert eine Kommando so das es über einen Stream gesendet werden kann.
 	 *

@@ -1,7 +1,9 @@
 package common;
 
 import client.ClientCore;
+import client.Events.ConnectionEstablishedListener;
 import common.Events.EventManager;
+import common.Events.ListenerInterface;
 import common.connection.Connection;
 import server.ServerCore;
 import common.connection.ConnectionRequestHandler;
@@ -24,6 +26,7 @@ public class Factory {
     private ConnectionRequestHandler connectionRequestHandler;
     private Connection connection;
     private ClientCore clientCore;
+    private ConnectionEstablishedListener connectionEstablishedListener;
 
     public Factory(ApplicationState applicationState) {
         this.applicationState = applicationState;
@@ -111,5 +114,15 @@ public class Factory {
         }
 
         return this.clientCore;
+    }
+
+    public ListenerInterface createConnectionEstablishedListener(boolean createNew) {
+
+        if (null == this.connectionEstablishedListener || createNew)
+            this.connectionEstablishedListener = new ConnectionEstablishedListener(
+                    this.createCommandFactory(false)
+            );
+
+        return this.connectionEstablishedListener;
     }
 }

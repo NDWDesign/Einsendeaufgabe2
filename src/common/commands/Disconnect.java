@@ -12,25 +12,29 @@ import java.util.ArrayList;
  */
 public class Disconnect implements CommandInterface {
 
-	private ApplicationState applicationState;
-	private Connection connection;
+    private ApplicationState applicationState;
+    private Connection connection;
 
-	@Override
-	public String serialize() {
-		return "<command name=\"disconnect\"></command>";
-	}
+    @Override
+    public String serialize() {
+        return "<command name=\"disconnect\"></command>";
+    }
 
-	@Override
-	public void loadParameters(
-			ApplicationState applicationState, Connection connection, ArrayList<String> parameters
-	) {
-		this.applicationState = applicationState;
-		this.connection = connection;
-	}
+    @Override
+    public void loadParameters(
+            ApplicationState applicationState, Connection connection, ArrayList<String> parameters
+    ) {
+        this.applicationState = applicationState;
+        this.connection = connection;
+    }
 
-	public void execute() {
+    public void execute() {
 
-		this.applicationState.getOutput().println("Disconnect.execute(): Unterbreche Verbindung!");
-		this.connection.interrupt();
-	}
+        this.applicationState.getOutput().println("Disconnect.execute(): Unterbreche Verbindung!");
+        this.connection.interrupt();
+    }
+
+    public void send() {
+        this.connection.send(this);
+    }
 }
