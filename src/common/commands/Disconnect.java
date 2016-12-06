@@ -31,6 +31,7 @@ public class Disconnect implements CommandInterface {
     public void execute() {
 
         this.applicationState.getOutput().println("Disconnect.execute(): Unterbreche Verbindung!");
+
         this.connection.interrupt();
     }
 

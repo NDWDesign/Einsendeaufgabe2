@@ -43,7 +43,7 @@ public class ConnectionRequestHandler implements ListenerInterface {
 			this.applicationState.getConnections().add(connection);
 
 			this.output.println("ConnectionRequestHandler.run(): Starte neue Verbindung");
-			new Thread(connection);
+			new Thread(connection).start();
 
 			this.eventManager.dispatch(
 					new ConnectionEstablished(connection)

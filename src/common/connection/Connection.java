@@ -6,6 +6,7 @@ import common.commands.CommandInterface;
 
 import java.io.*;
 import java.net.Socket;
+import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 public class Connection extends Thread {
 
 	private final PrintStream output;
+	private final UID uid;
 	private BufferedReader inputStream;
 	private PrintWriter outputStream;
 	private String playerName = "Default Player Name";
@@ -30,7 +32,7 @@ public class Connection extends Thread {
 			PrintStream output,
 			Socket socket
 	) throws IOException {
-
+		this.uid = new UID();
 		this.applicationState = applicationState;
 		this.commandFactory = commandFactory;
 		this.output = output;
@@ -43,8 +45,8 @@ public class Connection extends Thread {
 	public void run() {
 
 		try {
-			while (!currentThread().isInterrupted()) {
-				this.applicationState.getOutput().println("Connection.processCommand(): Warte auf Kommando");
+			while (!this.isInterrupted()) {
+				this.output.println("Connection["+this.uid+"].processCommand(): Warte auf Kommando");
 				this.processCommand();
 			}
 		} catch (IOException e) {
@@ -59,7 +61,7 @@ public class Connection extends Thread {
 
 		String commandString = this.readCommandString();
 		this.output.println(
-				"Connection.processCommand(): Neues Kommando erkannt: \""
+				"Connection["+this.uid+"].processCommand(): Neues Kommando erkannt: \""
 						+ commandString
 						+ "\""
 		);
@@ -68,7 +70,7 @@ public class Connection extends Thread {
 
 		if (null == commandString) {
 			this.output.println(
-					"Connection.process(): Fehler: Kommandoname konnte nicht erkannt werden."
+					"Connection["+this.uid+"].process(): Fehler: Kommandoname konnte nicht erkannt werden."
 			);
 			return;
 		}
@@ -77,7 +79,7 @@ public class Connection extends Thread {
 
 		try {
 			this.output.println(
-					"Connection.process(): " + commandName + " wird ausgeführt. Parameter: " + parameters
+					"Connection["+this.uid+"].process(): " + commandName + " wird ausgeführt. Parameter: " + parameters
 							.toString()
 			);
 			this.commandFactory.createCommand(
@@ -87,7 +89,7 @@ public class Connection extends Thread {
 			).execute();
 		} catch (Exception e) {
 			this.output.println(
-					"Connection.process(): Fehler: \""
+					"Connection["+this.uid+"].process(): Fehler: \""
 							+ commandName
 							+ "\" konnte nicht "
 							+ "richtig ausgeführt werden!"
@@ -98,7 +100,7 @@ public class Connection extends Thread {
 	/**
 	 * Liest einen vollständigen Kommando-String aus dem Input-Stream ein.
 	 *
-	 * @return Der vollständinge Kommand-String
+	 * @return Der vollständige Kommando-String
 	 *
 	 * @throws IOException Falls ein Fehler beim Lesen des Input-Streams auftritt.
 	 */
@@ -155,11 +157,13 @@ public class Connection extends Thread {
 	 */
 	public void send(CommandInterface command) {
 		this.output.println(
-				"Connection.send(): Sende Kommando \""
+				"Connection["+this.uid+"].send(): Sende Kommando \""
 						+ command.getClass().getSimpleName()
-						+ "\"..."
+						+ "\" ("
+				+command.serialize()
+				+") ..."
 		);
-		outputStream.print(command.serialize());
+		outputStream.println(command.serialize());
 		outputStream.flush();
 	}
 
