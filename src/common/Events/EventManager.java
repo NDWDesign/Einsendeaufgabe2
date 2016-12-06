@@ -3,6 +3,7 @@ package common.Events;
 import common.ApplicationState;
 import common.Events.EventInterface;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +16,12 @@ import java.util.Map;
 public class EventManager {
 
 	private final ApplicationState applicationState;
+	private final PrintStream output;
 
-	public EventManager(ApplicationState applicationState) {
+	public EventManager(ApplicationState applicationState, PrintStream output) {
 
 		this.applicationState = applicationState;
+		this.output = output;
 	}
 
 	/**
@@ -57,11 +60,20 @@ public class EventManager {
 	public void dispatch(EventInterface event) {
 		applicationState.getOutput()
 		                .println("EventManager.dispatch(): Dispatching \"" + event.getClass().getSimpleName() + "\"");
-		for (ListenerInterface listener : listeners.get(event.getClass().getSimpleName())) {
-			applicationState.getOutput()
-			                .println("EventManager.dispatch(): Running \"" + listener.getClass()
-			                                                                         .getSimpleName() + "\"");
-			listener.run(event);
+		try {
+			for (ListenerInterface listener : listeners.get(event.getClass().getSimpleName())) {
+				applicationState.getOutput()
+				                .println("EventManager.dispatch(): Running \"" + listener.getClass()
+				                                                                         .getSimpleName() + "\"");
+				listener.run(event);
+			}
+		} catch (Exception e) {
+
+			this.output.println(
+					"EventManager.dispatch(): Fehler! Konnte keine Einträge für Event \""
+							+ event.getClass().getSimpleName()
+							+ "\"finden!"
+			);
 		}
 	}
 }

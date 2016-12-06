@@ -18,111 +18,115 @@ import java.net.Socket;
  */
 public class Factory {
 
-    private CommandFactory commandFactory;
-    private ApplicationState applicationState;
-    private ServerCore serverCore;
-    private EventManager eventHandler;
-    private Configuration configuration;
-    private ConnectionRequestHandler connectionRequestHandler;
-    private Connection connection;
-    private ClientCore clientCore;
-    private ConnectionEstablishedListener connectionEstablishedListener;
+	private CommandFactory commandFactory;
+	private ApplicationState applicationState;
+	private ServerCore serverCore;
+	private EventManager eventHandler;
+	private Configuration configuration;
+	private ConnectionRequestHandler connectionRequestHandler;
+	private Connection connection;
+	private ClientCore clientCore;
+	private ConnectionEstablishedListener connectionEstablishedListener;
 
-    public Factory(ApplicationState applicationState) {
-        this.applicationState = applicationState;
-    }
+	public Factory(ApplicationState applicationState) {
+		this.applicationState = applicationState;
+	}
 
-    public CommandFactory createCommandFactory(boolean createNew) {
+	public CommandFactory createCommandFactory(boolean createNew) {
 
-        if (this.commandFactory == null || createNew) {
-            this.commandFactory = new CommandFactory(this.getApplicationState());
-        }
-        return this.commandFactory;
-    }
+		if (this.commandFactory == null || createNew) {
+			this.commandFactory = new CommandFactory(this.getApplicationState());
+		}
+		return this.commandFactory;
+	}
 
-    public ServerCore createServerCore(boolean createNew) {
-        if (this.serverCore == null || createNew) {
-            this.serverCore = new ServerCore(
-                    this.createEventManager(createNew),
-                    this.getApplicationState().getOutput(),
-                    Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
-            );
-        }
+	public ServerCore createServerCore(boolean createNew) {
+		if (this.serverCore == null || createNew) {
+			this.serverCore = new ServerCore(
+					this.createEventManager(createNew),
+					this.getApplicationState().getOutput(),
+					Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
+			);
+		}
 
-        return this.serverCore;
-    }
+		return this.serverCore;
+	}
 
-    public EventManager createEventManager(boolean createNew) {
+	public EventManager createEventManager(boolean createNew) {
 
-        if (this.eventHandler == null || createNew) {
-            this.eventHandler = new EventManager(this.getApplicationState());
-        }
+		if (this.eventHandler == null || createNew) {
+			this.eventHandler = new EventManager(
+					this.getApplicationState(),
+					this.getApplicationState().getOutput()
+			);
+		}
 
-        return this.eventHandler;
-    }
+		return this.eventHandler;
+	}
 
-    public Configuration createConfiguration(boolean createNew) {
+	public Configuration createConfiguration(boolean createNew) {
 
-        if (this.configuration == null || createNew) {
-            this.configuration = new Configuration();
-        }
+		if (this.configuration == null || createNew) {
+			this.configuration = new Configuration();
+		}
 
-        return this.configuration;
-    }
+		return this.configuration;
+	}
 
-    public ConnectionRequestHandler createClientConnectionHandler(boolean createNew) {
+	public ConnectionRequestHandler createClientConnectionHandler(boolean createNew) {
 
-        if (this.connectionRequestHandler == null || createNew) {
-            this.connectionRequestHandler = new ConnectionRequestHandler(
-                    this.getApplicationState(),
-                    this.getApplicationState().getFactory(),
-                    this.createEventManager(false),
-                    this.getApplicationState().getOutput()
-            );
-        }
+		if (this.connectionRequestHandler == null || createNew) {
+			this.connectionRequestHandler = new ConnectionRequestHandler(
+					this.getApplicationState(),
+					this.getApplicationState().getFactory(),
+					this.createEventManager(false),
+					this.getApplicationState().getOutput()
+			);
+		}
 
-        return this.connectionRequestHandler;
-    }
+		return this.connectionRequestHandler;
+	}
 
-    public ApplicationState getApplicationState() {
-        return applicationState;
-    }
+	public ApplicationState getApplicationState() {
+		return applicationState;
+	}
 
-    public Connection createConnection(Socket socket, boolean createNew) throws IOException {
+	public Connection createConnection(Socket socket, boolean createNew) throws IOException {
 
-        if (null == this.connection || createNew) {
-            this.connection = new Connection(
-                    this.getApplicationState(),
-                    this.createCommandFactory(false),
-                    this.getApplicationState().getOutput(),
-                    socket
-            );
-        }
+		if (null == this.connection || createNew) {
+			this.connection = new Connection(
+					this.getApplicationState(),
+					this.createCommandFactory(false),
+					this.getApplicationState().getOutput(),
+					socket
+			);
+		}
 
-        return this.connection;
-    }
+		return this.connection;
+	}
 
-    public ClientCore createClientCore(boolean createNew) {
+	public ClientCore createClientCore(boolean createNew) {
 
-        if (null == this.clientCore || createNew) {
+		if (null == this.clientCore || createNew) {
 
-            this.clientCore = new ClientCore(
-                    this.getApplicationState(),
-                    this.createEventManager(false),
-                    this.getApplicationState().getOutput()
-            );
-        }
+			this.clientCore = new ClientCore(
+					this.getApplicationState(),
+					this.createEventManager(false),
+					this.getApplicationState().getOutput()
+			);
+		}
 
-        return this.clientCore;
-    }
+		return this.clientCore;
+	}
 
-    public ListenerInterface createConnectionEstablishedListener(boolean createNew) {
+	public ListenerInterface createConnectionEstablishedListener(boolean createNew) {
 
-        if (null == this.connectionEstablishedListener || createNew)
-            this.connectionEstablishedListener = new ConnectionEstablishedListener(
-                    this.createCommandFactory(false)
-            );
+		if (null == this.connectionEstablishedListener || createNew) {
+			this.connectionEstablishedListener = new ConnectionEstablishedListener(
+					this.createCommandFactory(false)
+			);
+		}
 
-        return this.connectionEstablishedListener;
-    }
+		return this.connectionEstablishedListener;
+	}
 }

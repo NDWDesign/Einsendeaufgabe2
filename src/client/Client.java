@@ -16,7 +16,7 @@ public class Client {
         Factory factory = new Factory(applicationState);
 
         applicationState.getOutput().println("Client.main(): Registriere Events...");
-        new EventRegistry(factory, factory.createEventManager(false));
+        new EventRegistry(factory, factory.createEventManager(false)).run();
 
         applicationState.getOutput().println("Server.main(): Starte ClientCore...");
         factory.createClientCore(false).run();

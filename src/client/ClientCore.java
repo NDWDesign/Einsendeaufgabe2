@@ -32,7 +32,7 @@ public class ClientCore implements Runnable {
 
         try {
             this.eventManager.dispatch(
-                    new ConnectionRequested(new Socket("localhost", 3000))
+                    new ConnectionRequested(new Socket("192.168.1.101", 3000))
             );
         } catch (IOException e) {
             this.output.println(
