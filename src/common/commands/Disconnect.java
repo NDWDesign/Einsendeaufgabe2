@@ -1,7 +1,7 @@
 package common.commands;
 
 import common.ApplicationState;
-import server.connection.ClientConnection;
+import common.connection.Connection;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Disconnect implements CommandInterface {
 
 	private ApplicationState applicationState;
-	private ClientConnection clientConnection;
+	private Connection connection;
 
 	@Override
 	public String serialize() {
@@ -22,15 +22,15 @@ public class Disconnect implements CommandInterface {
 
 	@Override
 	public void loadParameters(
-			ApplicationState applicationState, ClientConnection clientConnection, ArrayList<String> parameters
+			ApplicationState applicationState, Connection connection, ArrayList<String> parameters
 	) {
 		this.applicationState = applicationState;
-		this.clientConnection = clientConnection;
+		this.connection = connection;
 	}
 
 	public void execute() {
 
 		this.applicationState.getOutput().println("Disconnect.execute(): Unterbreche Verbindung!");
-		this.clientConnection.interrupt();
+		this.connection.interrupt();
 	}
 }

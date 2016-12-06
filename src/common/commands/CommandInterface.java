@@ -1,7 +1,7 @@
 package common.commands;
 
 import common.ApplicationState;
-import server.connection.ClientConnection;
+import common.connection.Connection;
 
 import java.util.ArrayList;
 
@@ -27,7 +27,7 @@ public interface CommandInterface {
 	 */
 	void loadParameters(
 			ApplicationState applicationState,
-			ClientConnection clientConnection,
+			Connection connection,
 			ArrayList<String> parameters
 	);
 }

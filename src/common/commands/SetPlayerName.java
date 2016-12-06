@@ -1,7 +1,7 @@
 package common.commands;
 
 import common.ApplicationState;
-import server.connection.ClientConnection;
+import common.connection.Connection;
 
 import java.util.ArrayList;
 
@@ -13,12 +13,12 @@ import java.util.ArrayList;
 public class SetPlayerName implements CommandInterface {
 
 	private ApplicationState applicationState;
-	private ClientConnection clientConnection;
+	private Connection connection;
 	private String playerName;
 
 	@Override
 	public void execute() {
-		this.clientConnection.setPlayerName(this.playerName);
+		this.connection.setPlayerName(this.playerName);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class SetPlayerName implements CommandInterface {
 
 	@Override
 	public void loadParameters(
-			ApplicationState applicationState, ClientConnection clientConnection, ArrayList<String> parameters
+			ApplicationState applicationState, Connection connection, ArrayList<String> parameters
 	) {
 		this.playerName = parameters.get(0);
 	}

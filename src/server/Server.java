@@ -5,31 +5,25 @@ import common.Events.EventManager;
 import common.Factory;
 
 /**
- * Einsendeaufgabe2 04.12.2016
+ * Snake Server
  *
  * @author Nils Daniel Wittwer
  */
 public class Server {
 
-	public static void main(String[] args) {
-		ApplicationState applicationState = new ApplicationState();
+    public static void main(String[] args) {
 
-		applicationState.getOutput().println("Server.main(): Creating factory...");
-		applicationState.setFactory(new Factory(applicationState));
+        ApplicationState applicationState = new ApplicationState();
+        applicationState.setOutput(System.out);
+        applicationState.getOutput().println("Server.main(): Globaler Status erstellt.");
 
-		applicationState.getOutput().println("Server.main(): Registering event listeners...");
-		registerEventListeners(applicationState.getFactory());
+        applicationState.getOutput().println("Server.main(): Erstelle Factory...");
+        Factory factory = new Factory(applicationState);
 
-		applicationState.getOutput().println("Server.main(): Starting server core...");
-		applicationState.getFactory().createServerCore(false).run();
-	}
+        applicationState.getOutput().println("Server.main(): Registriere Event-Listeners...");
+        new EventRegistry(factory, factory.createEventManager(false)).run();
 
-	private static void registerEventListeners(Factory factory) {
-
-		EventManager eventManager = factory.createEventHandler(false);
-
-		eventManager.register("ClientConnected",
-				factory.createClientConnectionHandler(false)
-		);
-	}
+        applicationState.getOutput().println("Server.main(): Starte ServerCore...");
+        factory.createServerCore(false).run();
+    }
 }

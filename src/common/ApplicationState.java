@@ -1,6 +1,6 @@
 package common;
 
-import server.connection.ClientConnection;
+import common.connection.Connection;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -15,9 +15,9 @@ public class ApplicationState {
 
 
 	/** Speichert alle aktiven Netzwerkverbindungen */
-	private List<ClientConnection> clientConnections = new ArrayList<>();
+	private List<Connection> connections = new ArrayList<>();
 
-	private final PrintStream output = System.out;
+	private PrintStream output;
 
 	private Factory factory;
 
@@ -26,8 +26,8 @@ public class ApplicationState {
 		return output;
 	}
 
-	public List<ClientConnection> getClientConnections() {
-		return clientConnections;
+	public List<Connection> getConnections() {
+		return connections;
 	}
 
 	public Factory getFactory() {
@@ -37,5 +37,9 @@ public class ApplicationState {
 
 	public void setFactory(Factory factory) {
 		this.factory = factory;
+	}
+
+	public void setOutput(PrintStream output) {
+		this.output = output;
 	}
 }

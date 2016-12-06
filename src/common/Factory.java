@@ -1,9 +1,10 @@
 package common;
 
+import client.ClientCore;
 import common.Events.EventManager;
+import common.connection.Connection;
 import server.ServerCore;
-import server.connection.ClientConnection;
-import server.connection.ClientConnectionHandler;
+import common.connection.ConnectionRequestHandler;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -15,80 +16,100 @@ import java.net.Socket;
  */
 public class Factory {
 
-	private CommandFactory commandFactory;
-	private ApplicationState applicationState;
-	private ServerCore serverCore;
-	private EventManager eventHandler;
-	private Configuration configuration;
-	private ClientConnectionHandler clientConnectionHandler;
-	private ClientConnection clientConnection;
+    private CommandFactory commandFactory;
+    private ApplicationState applicationState;
+    private ServerCore serverCore;
+    private EventManager eventHandler;
+    private Configuration configuration;
+    private ConnectionRequestHandler connectionRequestHandler;
+    private Connection connection;
+    private ClientCore clientCore;
 
-	public Factory(ApplicationState applicationState) {
-		this.applicationState = applicationState;
-	}
+    public Factory(ApplicationState applicationState) {
+        this.applicationState = applicationState;
+    }
 
-	public CommandFactory createCommandFactory(boolean createNew) {
+    public CommandFactory createCommandFactory(boolean createNew) {
 
-		if (this.commandFactory == null || createNew) {
-			this.commandFactory = new CommandFactory(this.getApplicationState());
-		}
-		return this.commandFactory;
-	}
+        if (this.commandFactory == null || createNew) {
+            this.commandFactory = new CommandFactory(this.getApplicationState());
+        }
+        return this.commandFactory;
+    }
 
-	public ServerCore createServerCore(boolean createNew) {
-		if (this.serverCore == null || createNew) {
-			this.serverCore = new ServerCore(
-					this.getApplicationState(),
-					this.createEventHandler(createNew),
-					Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
-			);
-		}
-		return this.serverCore;
-	}
+    public ServerCore createServerCore(boolean createNew) {
+        if (this.serverCore == null || createNew) {
+            this.serverCore = new ServerCore(
+                    this.createEventManager(createNew),
+                    this.getApplicationState().getOutput(),
+                    Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
+            );
+        }
 
-	public EventManager createEventHandler(boolean createNew) {
+        return this.serverCore;
+    }
 
-		if (this.eventHandler == null || createNew) {
-			this.eventHandler = new EventManager(this.getApplicationState());
-		}
+    public EventManager createEventManager(boolean createNew) {
 
-		return this.eventHandler;
-	}
+        if (this.eventHandler == null || createNew) {
+            this.eventHandler = new EventManager(this.getApplicationState());
+        }
 
-	public Configuration createConfiguration(boolean createNew) {
+        return this.eventHandler;
+    }
 
-		if (this.configuration == null || createNew) {
-			this.configuration = new Configuration();
-		}
+    public Configuration createConfiguration(boolean createNew) {
 
-		return this.configuration;
-	}
+        if (this.configuration == null || createNew) {
+            this.configuration = new Configuration();
+        }
 
-	public ClientConnectionHandler createClientConnectionHandler(boolean createNew) {
+        return this.configuration;
+    }
 
-		if (this.clientConnectionHandler == null || createNew) {
-			this.clientConnectionHandler = new ClientConnectionHandler(
-					this.getApplicationState()
-			);
-		}
+    public ConnectionRequestHandler createClientConnectionHandler(boolean createNew) {
 
-		return this.clientConnectionHandler;
-	}
+        if (this.connectionRequestHandler == null || createNew) {
+            this.connectionRequestHandler = new ConnectionRequestHandler(
+                    this.getApplicationState(),
+                    this.getApplicationState().getFactory(),
+                    this.createEventManager(false),
+                    this.getApplicationState().getOutput()
+            );
+        }
 
-	public ApplicationState getApplicationState() {
-		return applicationState;
-	}
+        return this.connectionRequestHandler;
+    }
 
-	public ClientConnection createClientConnection(Socket socket, boolean createNew) throws IOException {
+    public ApplicationState getApplicationState() {
+        return applicationState;
+    }
 
-		if (null == this.clientConnection || createNew) {
-			this.clientConnection = new ClientConnection(
-					this.getApplicationState(),
-					this.createCommandFactory(false),
-					socket
-			);
-		}
+    public Connection createConnection(Socket socket, boolean createNew) throws IOException {
 
-		return this.clientConnection;
-	}
+        if (null == this.connection || createNew) {
+            this.connection = new Connection(
+                    this.getApplicationState(),
+                    this.createCommandFactory(false),
+                    this.getApplicationState().getOutput(),
+                    socket
+            );
+        }
+
+        return this.connection;
+    }
+
+    public ClientCore createClientCore(boolean createNew) {
+
+        if (null == this.clientCore || createNew) {
+
+            this.clientCore = new ClientCore(
+                    this.getApplicationState(),
+                    this.createEventManager(false),
+                    this.getApplicationState().getOutput()
+            );
+        }
+
+        return this.clientCore;
+    }
 }

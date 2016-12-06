@@ -7,11 +7,11 @@ import java.net.Socket;
  *
  * @author Nils Daniel Wittwer
  */
-public class ClientConnected implements EventInterface {
+public class ConnectionRequested implements EventInterface {
 
 	private Socket socket;
 
-	public ClientConnected(Socket clientSocket) {
+	public ConnectionRequested(Socket clientSocket) {
 
 		this.socket = clientSocket;
 	}

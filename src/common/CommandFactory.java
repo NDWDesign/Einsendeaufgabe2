@@ -1,7 +1,7 @@
 package common;
 
 import common.commands.*;
-import server.connection.ClientConnection;
+import common.connection.Connection;
 
 import java.util.ArrayList;
 
@@ -22,14 +22,14 @@ public class CommandFactory {
 	/**
 	 * Erstellt eine neue Instanz eines Kommandos.
 	 *
-	 * @param clientConnection - Verbindung von dem das Kommando stammt.
+	 * @param connection - Verbindung von dem das Kommando stammt.
 	 * @param commandName      - Name des Kommandos.
 	 * @param parameters       - Eventuell für das Kommando benötigte Parameter.
 	 *
 	 * @return CommandInterface
 	 */
 	public CommandInterface createCommand(
-			ClientConnection clientConnection,
+			Connection connection,
 			String commandName,
 			ArrayList<String> parameters
 	) {
@@ -49,7 +49,7 @@ public class CommandFactory {
 
 		if (null != command) {
 			applicationState.getOutput().println("CommandFactory.createCommand(): Kommando \"" + commandName + "\" erstellt. Übergebe Parameter.");
-			command.loadParameters(this.applicationState, clientConnection, parameters);
+			command.loadParameters(this.applicationState, connection, parameters);
 		}
 
 		return command;
