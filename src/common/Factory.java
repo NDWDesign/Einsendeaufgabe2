@@ -1,132 +1,137 @@
 package common;
 
 import client.ClientCore;
-import client.Events.ConnectionEstablishedListener;
+import client.Listeners.ConnectionEstablishedListener;
 import common.Events.EventManager;
-import common.Events.ListenerInterface;
-import common.connection.Connection;
+import common.Listeners.ListenerInterface;
 import server.ServerCore;
-import common.connection.ConnectionRequestHandler;
+import common.Listeners.ConnectionRequestListener;
 
 import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Einsendeaufgabe2 04.12.2016
+ * Factory - Erstellt Instanzen mit den dazugehörigen Abhängigkeiten
+ *
+ * @todo Factory und DI-Container trennen (Instanzen in ApplicationState ablegen)
  *
  * @author Nils Daniel Wittwer
  */
 public class Factory {
 
-	private CommandFactory commandFactory;
-	private ApplicationState applicationState;
-	private ServerCore serverCore;
-	private EventManager eventHandler;
-	private Configuration configuration;
-	private ConnectionRequestHandler connectionRequestHandler;
-	private Connection connection;
-	private ClientCore clientCore;
-	private ConnectionEstablishedListener connectionEstablishedListener;
+    private CommandFactory commandFactory;
+    private ApplicationState applicationState;
+    private ServerCore serverCore;
+    private EventManager eventHandler;
+    private Configuration configuration;
+    private ConnectionRequestListener connectionRequestListener;
+    private Connection connection;
+    private ClientCore clientCore;
+    private ConnectionEstablishedListener connectionEstablishedListener;
 
-	public Factory(ApplicationState applicationState) {
-		this.applicationState = applicationState;
-	}
+    public Factory(ApplicationState applicationState) {
+        this.applicationState = applicationState;
+    }
 
-	public CommandFactory createCommandFactory(boolean createNew) {
+    public CommandFactory createCommandFactory(boolean createNew) {
 
-		if (this.commandFactory == null || createNew) {
-			this.commandFactory = new CommandFactory(this.getApplicationState());
-		}
-		return this.commandFactory;
-	}
+        if (this.commandFactory == null || createNew) {
+            this.commandFactory = new CommandFactory(
+                    this.getApplicationState(),
+                    this.applicationState.getOutput()
+            );
+        }
+        return this.commandFactory;
+    }
 
-	public ServerCore createServerCore(boolean createNew) {
-		if (this.serverCore == null || createNew) {
-			this.serverCore = new ServerCore(
-					this.createEventManager(createNew),
-					this.getApplicationState().getOutput(),
-					Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
-			);
-		}
+    public ServerCore createServerCore(boolean createNew) {
+        if (this.serverCore == null || createNew) {
+            this.serverCore = new ServerCore(
+                    this.createEventManager(createNew),
+                    this.getApplicationState().getOutput(),
+                    Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
+            );
+        }
 
-		return this.serverCore;
-	}
+        return this.serverCore;
+    }
 
-	public EventManager createEventManager(boolean createNew) {
+    public EventManager createEventManager(boolean createNew) {
 
-		if (this.eventHandler == null || createNew) {
-			this.eventHandler = new EventManager(
-					this.getApplicationState(),
-					this.getApplicationState().getOutput()
-			);
-		}
+        if (this.eventHandler == null || createNew) {
+            this.eventHandler = new EventManager(
+                    this.getApplicationState(),
+                    this.getApplicationState().getOutput()
+            );
+        }
 
-		return this.eventHandler;
-	}
+        return this.eventHandler;
+    }
 
-	public Configuration createConfiguration(boolean createNew) {
+    public Configuration createConfiguration(boolean createNew) {
 
-		if (this.configuration == null || createNew) {
-			this.configuration = new Configuration();
-		}
+        if (this.configuration == null || createNew) {
+            this.configuration = new Configuration();
+        }
 
-		return this.configuration;
-	}
+        return this.configuration;
+    }
 
-	public ConnectionRequestHandler createClientConnectionHandler(boolean createNew) {
+    public ConnectionRequestListener createClientConnectionHandler(boolean createNew) {
 
-		if (this.connectionRequestHandler == null || createNew) {
-			this.connectionRequestHandler = new ConnectionRequestHandler(
-					this.getApplicationState(),
-					this.getApplicationState().getFactory(),
-					this.createEventManager(false),
-					this.getApplicationState().getOutput()
-			);
-		}
+        if (this.connectionRequestListener == null || createNew) {
+            this.connectionRequestListener = new ConnectionRequestListener(
+                    this.getApplicationState(),
+                    this.getApplicationState().getFactory(),
+                    this.createEventManager(false),
+                    this.getApplicationState().getOutput()
+            );
+        }
 
-		return this.connectionRequestHandler;
-	}
+        return this.connectionRequestListener;
+    }
 
-	public ApplicationState getApplicationState() {
-		return applicationState;
-	}
+    public ApplicationState getApplicationState() {
+        return applicationState;
+    }
 
-	public Connection createConnection(Socket socket, boolean createNew) throws IOException {
+    public Connection createConnection(Socket socket, boolean createNew) throws IOException {
 
-		if (null == this.connection || createNew) {
-			this.connection = new Connection(
-					this.getApplicationState(),
-					this.createCommandFactory(false),
-					this.getApplicationState().getOutput(),
-					socket
-			);
-		}
+        if (null == this.connection || createNew) {
+            this.connection = new Connection(
+                    this.getApplicationState(),
+                    this.createCommandFactory(false),
+                    this.getApplicationState().getOutput(),
+                    socket
+            );
+        }
 
-		return this.connection;
-	}
+        return this.connection;
+    }
 
-	public ClientCore createClientCore(boolean createNew) {
+    public ClientCore createClientCore(boolean createNew) {
 
-		if (null == this.clientCore || createNew) {
+        if (null == this.clientCore || createNew) {
 
-			this.clientCore = new ClientCore(
-					this.getApplicationState(),
-					this.createEventManager(false),
-					this.getApplicationState().getOutput()
-			);
-		}
+            this.clientCore = new ClientCore(
+                    this.getApplicationState(),
+                    this.createEventManager(false),
+                    this.getApplicationState().getOutput()
+            );
+        }
 
-		return this.clientCore;
-	}
+        return this.clientCore;
+    }
 
-	public ListenerInterface createConnectionEstablishedListener(boolean createNew) {
+    public ListenerInterface createConnectionEstablishedListener(boolean createNew) {
 
-		if (null == this.connectionEstablishedListener || createNew) {
-			this.connectionEstablishedListener = new ConnectionEstablishedListener(
-					this.createCommandFactory(false)
-			);
-		}
+        if (null == this.connectionEstablishedListener || createNew) {
+            this.connectionEstablishedListener = new ConnectionEstablishedListener(
+                    this.createCommandFactory(false),
+                    this.getApplicationState().getOutput()
+            );
+        }
 
-		return this.connectionEstablishedListener;
-	}
+        return this.connectionEstablishedListener;
+    }
 }

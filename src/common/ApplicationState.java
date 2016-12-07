@@ -1,7 +1,5 @@
 package common;
 
-import common.connection.Connection;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;

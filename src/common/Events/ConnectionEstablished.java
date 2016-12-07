@@ -1,9 +1,9 @@
 package common.Events;
 
-import common.connection.Connection;
+import common.Connection;
 
 /**
- * Created by Nils Daniel Wittwer on 06.12.2016.
+ * ConnectionEstablished Event - Wird ausgelöst wenn eine neue Verbindung (Connection) erfolgreich erstellt wurde.
  */
 public class ConnectionEstablished implements EventInterface {
 

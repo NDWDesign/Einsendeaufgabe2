@@ -1,9 +1,8 @@
 package common;
 
-import common.commands.*;
-import common.connection.Connection;
+import common.Commands.*;
 
-import java.util.ArrayList;
+import java.io.PrintStream;
 
 /**
  * CommandFactory - Erstellt eine neue Instanz eines Kommandos.
@@ -12,48 +11,39 @@ import java.util.ArrayList;
  */
 public class CommandFactory {
 
-	private final ApplicationState applicationState;
+    private final ApplicationState applicationState;
+    private final PrintStream output;
 
-	CommandFactory(ApplicationState applicationState) {
+    CommandFactory(ApplicationState applicationState, PrintStream output) {
 
-		this.applicationState = applicationState;
-	}
+        this.applicationState = applicationState;
+        this.output = output;
+    }
 
-	/**
-	 * Erstellt eine neue Instanz eines Kommandos.
-	 *
-	 * @param connection - Verbindung von dem das Kommando stammt.
-	 * @param commandName      - Name des Kommandos.
-	 * @param parameters       - Eventuell für das Kommando benötigte Parameter.
-	 *
-	 * @return CommandInterface
-	 */
-	public CommandInterface createCommand(
-			Connection connection,
-			String commandName,
-			ArrayList<String> parameters
-	) {
+    /**
+     * Erstellt eine neue Instanz eines Kommandos.
+     *
+     * @param commandName - Name des Kommandos.
+     * @return CommandInterface
+     */
+    public CommandInterface createCommand(
+            String commandName
+    ) {
 
-		CommandInterface command = null;
-		try {
-			switch (commandName) {
-				case "disconnect":
-					command = new Disconnect();
-					break;
-				case "setPlayerName":
-					command = new SetPlayerName();
-					break;
-			}
-		} catch (Exception e) {
-			applicationState.getOutput().println("CommandFactory.createCommand(): Fehler: \"" + commandName + "\" konnte nicht instantiiert werden!");
-			e.getStackTrace();
-		}
+        CommandInterface command = null;
+        try {
+            if (commandName.equals(Disconnect.class.getSimpleName())) {
+                command = new Disconnect(this.applicationState.getOutput());
 
-		if (null != command) {
-			applicationState.getOutput().println("CommandFactory.createCommand(): Kommando \"" + commandName + "\" erstellt. Übergebe Parameter.");
-			command.loadParameters(this.applicationState, connection, parameters);
-		}
+            } else if (commandName.equals(SetPlayerName.class.getSimpleName())) {
+                command = new SetPlayerName(this.applicationState.getOutput());
+            }
 
-		return command;
-	}
+        } catch (Exception e) {
+            applicationState.getOutput().println("CommandFactory.createCommand(): Fehler: \"" + commandName + "\" konnte nicht instantiiert werden!");
+            e.getStackTrace();
+        }
+
+        return command;
+    }
 }

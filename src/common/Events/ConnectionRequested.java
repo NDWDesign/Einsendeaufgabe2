@@ -3,7 +3,7 @@ package common.Events;
 import java.net.Socket;
 
 /**
- * Einsendeaufgabe2 04.12.2016
+ * ConnectinoRequested Event - Wird ausgelöst wenn eine neue Socketverbindung aufgebaut wurde.
  *
  * @author Nils Daniel Wittwer
  */
