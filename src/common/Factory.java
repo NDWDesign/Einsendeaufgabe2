@@ -2,6 +2,8 @@ package common;
 
 import client.ClientCore;
 import client.Listeners.ConnectionEstablishedListener;
+import common.Commands.CommandParserInterface;
+import common.Commands.XmlCommandParser;
 import common.Events.EventManager;
 import common.Listeners.ListenerInterface;
 import server.ServerCore;
@@ -13,9 +15,8 @@ import java.net.Socket;
 /**
  * Factory - Erstellt Instanzen mit den dazugehörigen Abhängigkeiten
  *
- * @todo Factory und DI-Container trennen (Instanzen in ApplicationState ablegen)
- *
  * @author Nils Daniel Wittwer
+ * @todo Factory und DI-Container trennen (Instanzen in ApplicationState ablegen)
  */
 public class Factory {
 
@@ -28,6 +29,7 @@ public class Factory {
     private Connection connection;
     private ClientCore clientCore;
     private ConnectionEstablishedListener connectionEstablishedListener;
+    private XmlCommandParser xmlCommandParser;
 
     public Factory(ApplicationState applicationState) {
         this.applicationState = applicationState;
@@ -101,12 +103,25 @@ public class Factory {
             this.connection = new Connection(
                     this.getApplicationState(),
                     this.createCommandFactory(false),
+                    this.createXmlCommandParser(false),
                     this.getApplicationState().getOutput(),
                     socket
             );
         }
 
         return this.connection;
+    }
+
+    private CommandParserInterface createXmlCommandParser(boolean createNew) {
+
+        if (null == this.xmlCommandParser || createNew) {
+
+            this.xmlCommandParser = new XmlCommandParser(
+                    this.getApplicationState().getOutput()
+            );
+        }
+
+        return this.xmlCommandParser;
     }
 
     public ClientCore createClientCore(boolean createNew) {

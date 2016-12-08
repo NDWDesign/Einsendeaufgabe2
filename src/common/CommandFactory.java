@@ -37,6 +37,8 @@ public class CommandFactory {
 
             } else if (commandName.equals(SetPlayerName.class.getSimpleName())) {
                 command = new SetPlayerName(this.applicationState.getOutput());
+            } else if (commandName.equals(PingPong.class.getSimpleName())) {
+                command = new PingPong(this.applicationState.getOutput());
             }
 
         } catch (Exception e) {

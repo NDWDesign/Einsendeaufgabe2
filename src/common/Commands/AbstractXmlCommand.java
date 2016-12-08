@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 abstract public class AbstractXmlCommand implements CommandInterface {
 
-    protected  ArrayList<String> parameters = new ArrayList<String>();
+    protected ArrayList<String> parameters = new ArrayList<String>();
     protected Connection connection;
 
     public String serialize() {
@@ -40,6 +40,11 @@ abstract public class AbstractXmlCommand implements CommandInterface {
     public CommandInterface setConnection(Connection connection) {
         this.connection = connection;
         return this;
+    }
+
+    public Connection getConnection() {
+
+        return this.getConnection();
     }
 
     public void send() {
