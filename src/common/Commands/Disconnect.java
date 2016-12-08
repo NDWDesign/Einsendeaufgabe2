@@ -21,7 +21,7 @@ public class Disconnect extends AbstractXmlCommand {
     public void run() {
 
         this.output.println("Disconnect.run(): Unterbreche Verbindung!");
-
+        // Todo Thread beenden klappt nicht. Prüfen.
         this.connection.interrupt();
     }
 

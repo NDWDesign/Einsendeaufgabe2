@@ -32,7 +32,11 @@ public class PingPong extends AbstractXmlCommand implements ListenerInterface {
         }
         this.output.println("PingPong.run(): Noch " + this.getCount() + " Ausführungen...");
         this.setCount(this.getCount() - 1);
-        this.send();
+        if(this.getCount() > 0) {
+            this.send();
+        } else {
+            this.output.println("PingPong.run(): Beendet");
+        }
     }
 
     public PingPong setCount(int count) {

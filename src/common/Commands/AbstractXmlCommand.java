@@ -16,17 +16,17 @@ abstract public class AbstractXmlCommand implements CommandInterface {
 
         String commandString = "<command name=\""
                 + this.getClass().getSimpleName() +
-                "\">";
+                "\">\n";
 
         if (!this.parameters.isEmpty()) {
             for (String parameter : this.parameters) {
-                commandString += "<parameter>"
+                commandString += "     <parameter>"
                         + parameter
                         + "</parameter>";
             }
         }
 
-        commandString += "</command>";
+        commandString += "</command>\n";
 
         return commandString;
     }
