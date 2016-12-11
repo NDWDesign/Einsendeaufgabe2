@@ -2,7 +2,7 @@ package common.Commands;
 
 import common.Connection;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * CommandInterface - Beschreibung eines Kommandos
@@ -34,8 +34,8 @@ public interface CommandInterface {
      * @param parameters Die Parameter die in das Kommando geladen werden sollen.
      * @return this
      */
-    CommandInterface setParameters(
-            ArrayList<String> parameters
+    CommandInterface loadParameters(
+            HashMap<String, String> parameters
     );
 
     /**

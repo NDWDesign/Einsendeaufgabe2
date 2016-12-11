@@ -1,6 +1,6 @@
 package common.Commands;
 
-import java.io.PrintStream;
+import common.Loggers.Logger;
 
 /**
  * Disconnect Kommando - Unterbricht die enthaltene Verbindung.
@@ -9,19 +9,19 @@ import java.io.PrintStream;
  */
 public class Disconnect extends AbstractXmlCommand {
 
-    private final PrintStream output;
+    private final Logger logger;
 
-    public Disconnect(PrintStream output) {
+    public Disconnect(Logger logger) {
 
-        this.output = output;
+        this.logger = logger;
     }
 
     @Override
 
     public void run() {
 
-        this.output.println("Disconnect.run(): Unterbreche Verbindung!");
-        // Todo Thread beenden klappt nicht. Prüfen.
+        this.logger.println(" Unterbreche Verbindung!");
+
         this.connection.interrupt();
     }
 

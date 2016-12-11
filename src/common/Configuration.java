@@ -1,6 +1,5 @@
 package common;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -8,9 +7,9 @@ import java.util.HashMap;
  *
  * @author Nils Daniel Wittwer
  */
-class Configuration extends HashMap<String, String> {
+public class Configuration extends HashMap<String, Object> {
 
 	Configuration() {
-		this.put("ServerPort", "3000");
+		this.put("ServerPort", 3000);
 	}
 }

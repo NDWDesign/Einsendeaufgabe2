@@ -1,10 +1,11 @@
 package server;
 
+import common.CoreInterface;
 import common.Events.ConnectionRequested;
 import common.Events.EventManager;
+import common.Loggers.Logger;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.ServerSocket;
 
 /**
@@ -12,47 +13,49 @@ import java.net.ServerSocket;
  *
  * @author Nils Daniel Wittwer
  */
-public class ServerCore extends Thread {
+public class ServerCore extends Thread implements CoreInterface {
 
-    private final int serverPort;
-    private final EventManager eventHandler;
-    private final PrintStream output;
+	private final int serverPort;
+	private final EventManager eventHandler;
+	private final Logger logger;
 
-    public ServerCore(EventManager eventHandler, PrintStream output, int port) {
+	public ServerCore(EventManager eventHandler, Logger logger, int port) {
 
-        this.eventHandler = eventHandler;
-        this.output = output;
-        this.serverPort = port;
-    }
+		this.eventHandler = eventHandler;
+		this.logger = logger;
+		this.serverPort = port;
+	}
 
-    public void run() {
+	public void run() {
 
-        ServerSocket serverSocket;
+		ServerSocket serverSocket;
 
-        try {
-            serverSocket = new ServerSocket(this.serverPort);
-        } catch (IOException e) {
-            this.output.println(
-                    "ServerCore.run(): Fehler! ServerSocket für Port \"" + this.serverPort + "\" konnte nicht erstellt werden!"
-                            + "\nNachricht: " + e.getMessage()
-            );
-            return;
-        }
+		try {
+			serverSocket = new ServerSocket(this.serverPort);
+		} catch (IOException e) {
+			this.logger.println(
+					" Fehler! ServerSocket für Port \"" + this.serverPort + "\" konnte nicht erstellt" +
 
-        try {
-            while (!currentThread().isInterrupted()) {
-                this.output.println(
-                        "ServerCore.run(): Warte auf neue Verbindungen..."
-                );
-                eventHandler.dispatch(
-                        new ConnectionRequested(serverSocket.accept())
-                );
-            }
-        } catch (IOException e) {
-            this.output.println(
-                    "ServerCore.run(): Fehler beim Warten auf Verbindung!"
-                            + "\nNachricht: " + e.getMessage()
-            );
-        }
-    }
+							" werden!"
+							+ "\nNachricht: " + e.getMessage()
+			);
+			return;
+		}
+
+		try {
+			while (!currentThread().isInterrupted()) {
+				this.logger.println(
+						"Warte auf neue Verbindungen..."
+				);
+				eventHandler.dispatch(
+						new ConnectionRequested(serverSocket.accept())
+				);
+			}
+		} catch (IOException e) {
+			this.logger.println(
+					"Fehler beim Warten auf Verbindung!"
+							+ "\nNachricht: " + e.getMessage()
+			);
+		}
+	}
 }

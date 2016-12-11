@@ -1,31 +1,26 @@
 package client;
 
+import client.Listeners.ConnectionEstablishedListener;
+import common.Container;
 import common.Events.ConnectionEstablished;
-import common.Events.ConnectionRequested;
 import common.Events.EventManager;
-import common.Factory;
 
 /**
- * Server Event Registry - Initialisiert serverseitig benötigte Events
+ * Server Event Registry - Initialisiert klientseitig benötigte Events
  */
-class EventRegistry implements Runnable {
+class EventRegistry extends common.Events.EventRegistry {
 
-    private final EventManager eventManager;
-    private final Factory factory;
-
-    EventRegistry(Factory factory, EventManager eventManager) {
-        this.factory = factory;
-        this.eventManager = eventManager;
-
+    public EventRegistry(Container container, EventManager eventManager) {
+        super(container, eventManager);
     }
 
     public void run() {
 
-        eventManager.register(ConnectionRequested.class.getSimpleName(),
-                factory.createClientConnectionHandler(false)
-        );
-        eventManager.register(ConnectionEstablished.class.getSimpleName(),
-                factory.createConnectionEstablishedListener(false)
+        super.run();
+
+        eventManager.register(
+                ConnectionEstablished.class.getSimpleName(),
+                container.get(ConnectionEstablishedListener.class)
         );
     }
 

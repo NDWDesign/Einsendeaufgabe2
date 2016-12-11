@@ -1,8 +1,9 @@
 package server;
 
-import common.ApplicationState;
-import common.Events.EventManager;
-import common.Factory;
+import common.Container;
+import common.CoreInterface;
+import common.Events.EventRegistryInterface;
+import common.Loggers.Logger;
 
 /**
  * Snake Server
@@ -11,20 +12,23 @@ import common.Factory;
  */
 public class Server {
 
-    public static void main(String[] args) {
+	/**
+	 * ToDo Implementierung doppelt Server, nur mit anderem Namespace, wie ändern?
+	 *
+	 * @param args Nicht genutzt
+	 */
+	public static void main(String[] args) {
 
-        ApplicationState applicationState = new ApplicationState();
-        applicationState.setOutput(System.out);
-        applicationState.getOutput().println("Server.main(): Globaler Status erstellt.");
+		Container container = new Container();
+		container.setFactory(new Factory(container));
 
-        applicationState.getOutput().println("Server.main(): Erstelle Factory...");
-        Factory factory = new Factory(applicationState);
-		applicationState.setFactory(factory);
+		Logger logger = container.get(Logger.class);
+		logger.println("Factory und Globaler Status erstellt.");
 
-        applicationState.getOutput().println("Server.main(): Registriere Event-Listeners...");
-        new EventRegistry(factory, factory.createEventManager(false)).run();
+		logger.println("Registriere Events...");
+		container.get(EventRegistryInterface.class).run();
 
-        applicationState.getOutput().println("Server.main(): Starte ServerCore...");
-        factory.createServerCore(false).run();
-    }
+		logger.println("Starte Core...");
+		container.get(CoreInterface.class).run();
+	}
 }

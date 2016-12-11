@@ -1,13 +1,11 @@
 package common;
 
-import client.ClientCore;
-import client.Listeners.ConnectionEstablishedListener;
+import common.Commands.CommandFactory;
 import common.Commands.CommandParserInterface;
 import common.Commands.XmlCommandParser;
 import common.Events.EventManager;
-import common.Listeners.ListenerInterface;
-import server.ServerCore;
 import common.Listeners.ConnectionRequestListener;
+import common.Loggers.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -16,137 +14,111 @@ import java.net.Socket;
  * Factory - Erstellt Instanzen mit den dazugehörigen Abhängigkeiten
  *
  * @author Nils Daniel Wittwer
- * @todo Factory und DI-Container trennen (Instanzen in ApplicationState ablegen)
  */
 public class Factory {
 
-    private CommandFactory commandFactory;
-    private ApplicationState applicationState;
-    private ServerCore serverCore;
-    private EventManager eventHandler;
-    private Configuration configuration;
-    private ConnectionRequestListener connectionRequestListener;
-    private Connection connection;
-    private ClientCore clientCore;
-    private ConnectionEstablishedListener connectionEstablishedListener;
-    private XmlCommandParser xmlCommandParser;
+	protected final Container container;
 
-    public Factory(ApplicationState applicationState) {
-        this.applicationState = applicationState;
-    }
+	public Factory(Container container) {
 
-    public CommandFactory createCommandFactory(boolean createNew) {
+		this.container = container;
+	}
 
-        if (this.commandFactory == null || createNew) {
-            this.commandFactory = new CommandFactory(
-                    this.getApplicationState(),
-                    this.applicationState.getOutput()
-            );
-        }
-        return this.commandFactory;
-    }
+	/**
+	 * ToDo Möglichkeit finden Polymorphismus anstatt dieser hässlichen Funktion zu verwenden.
+	 * Erstellt einen Instanz der übergebenen Klasse
+	 *
+	 * @param requiredClass Klasse von der einen Instanz erstellt werden soll.
+	 * @param <T>           Typ der Instanz.
+	 *
+	 * @return Instanz der angeforderten Klasse vom Typ T
+	 * wenn keine Implementierung existiert wird null zurück gegeben.
+	 */
 
-    public ServerCore createServerCore(boolean createNew) {
-        if (this.serverCore == null || createNew) {
-            this.serverCore = new ServerCore(
-                    this.createEventManager(createNew),
-                    this.getApplicationState().getOutput(),
-                    Integer.parseInt(this.createConfiguration(createNew).get("ServerPort"))
-            );
-        }
+	public <T> T create(Class<T> requiredClass) {
 
-        return this.serverCore;
-    }
+		switch (requiredClass.getSimpleName()) {
 
-    public EventManager createEventManager(boolean createNew) {
+			case ("CommandFactory"):
+				return (T) this.createCommandFactory();
 
-        if (this.eventHandler == null || createNew) {
-            this.eventHandler = new EventManager(
-                    this.getApplicationState(),
-                    this.getApplicationState().getOutput()
-            );
-        }
+			case ("Configuration"):
+				return (T) this.createConfiguration();
 
-        return this.eventHandler;
-    }
+			case ("ConnectionRequestListener"):
+				return (T) this.createConnectionRequestListener();
 
-    public Configuration createConfiguration(boolean createNew) {
+			case ("Connections"):
+				return (T) this.createConnections();
 
-        if (this.configuration == null || createNew) {
-            this.configuration = new Configuration();
-        }
+			case ("CommandParserInterface"):
+				return (T) this.createXmlCommandParser();
 
-        return this.configuration;
-    }
+			case ("EventManager"):
+				return (T) this.createEventManager();
 
-    public ConnectionRequestListener createClientConnectionHandler(boolean createNew) {
+			case ("Logger"):
+				return (T) this.createLogger();
+		}
 
-        if (this.connectionRequestListener == null || createNew) {
-            this.connectionRequestListener = new ConnectionRequestListener(
-                    this.getApplicationState(),
-                    this.getApplicationState().getFactory(),
-                    this.createEventManager(false),
-                    this.getApplicationState().getOutput()
-            );
-        }
+		return null;
+	}
 
-        return this.connectionRequestListener;
-    }
+	private Connections createConnections() {
 
-    public ApplicationState getApplicationState() {
-        return applicationState;
-    }
+		return new Connections();
+	}
 
-    public Connection createConnection(Socket socket, boolean createNew) throws IOException {
+	public CommandFactory createCommandFactory() {
 
-        if (null == this.connection || createNew) {
-            this.connection = new Connection(
-                    this.getApplicationState(),
-                    this.createCommandFactory(false),
-                    this.createXmlCommandParser(false),
-                    this.getApplicationState().getOutput(),
-                    socket
-            );
-        }
+		return new CommandFactory(
+				this.container.get(Logger.class)
+		);
+	}
 
-        return this.connection;
-    }
 
-    private CommandParserInterface createXmlCommandParser(boolean createNew) {
+	public EventManager createEventManager() {
 
-        if (null == this.xmlCommandParser || createNew) {
+		return new EventManager(
+				this.container,
+				this.container.get(Logger.class)
+		);
+	}
 
-            this.xmlCommandParser = new XmlCommandParser(
-                    this.getApplicationState().getOutput()
-            );
-        }
+	public Configuration createConfiguration() {
 
-        return this.xmlCommandParser;
-    }
+		return new Configuration();
+	}
 
-    public ClientCore createClientCore(boolean createNew) {
+	public ConnectionRequestListener createConnectionRequestListener() {
 
-        if (null == this.clientCore || createNew) {
+		return new ConnectionRequestListener(
+				this.container.get(Connections.class),
+				this,
+				this.container.get(EventManager.class),
+				this.container.get(Logger.class)
+		);
 
-            this.clientCore = new ClientCore(
-                    this.getApplicationState(),
-                    this.createEventManager(false),
-                    this.getApplicationState().getOutput()
-            );
-        }
+	}
 
-        return this.clientCore;
-    }
+	public Connection createConnection(Socket socket) throws IOException {
 
-    public ListenerInterface createConnectionEstablishedListener(boolean createNew) {
+		return new Connection(
+				this.container.get(CommandFactory.class),
+				this.container.get(CommandParserInterface.class),
+				this.container.get(Logger.class),
+				socket
+		);
+	}
 
-        if (null == this.connectionEstablishedListener || createNew) {
-            this.connectionEstablishedListener = new ConnectionEstablishedListener(
-                    this.createCommandFactory(false),
-                    this.getApplicationState().getOutput()
-            );
-        }
+	public CommandParserInterface createXmlCommandParser() {
 
-        return this.connectionEstablishedListener;
-    }
+		return new XmlCommandParser(
+				this.container.get(Logger.class)
+		);
+	}
+
+	public Logger createLogger() {
+		return new Logger();
+	}
 }

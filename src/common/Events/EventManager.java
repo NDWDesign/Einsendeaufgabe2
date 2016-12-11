@@ -1,9 +1,9 @@
 package common.Events;
 
-import common.ApplicationState;
+import common.Container;
 import common.Listeners.ListenerInterface;
+import common.Loggers.Logger;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,13 +15,13 @@ import java.util.Map;
  */
 public class EventManager {
 
-	private final ApplicationState applicationState;
-	private final PrintStream output;
+	private final Container container;
+	private final Logger logger;
 
-	public EventManager(ApplicationState applicationState, PrintStream output) {
+	public EventManager(Container container, Logger logger) {
 
-		this.applicationState = applicationState;
-		this.output = output;
+		this.container = container;
+		this.logger = logger;
 	}
 
 	/**
@@ -38,11 +38,11 @@ public class EventManager {
 	public void register(String eventClassName, ListenerInterface listener) {
 
 		if (!this.listeners.containsKey(eventClassName)) {
-			this.output.println("EventManager.register(): Neues Event \"" + eventClassName + "\"");
+			this.logger.println("Neues Event", eventClassName);
 			this.listeners.put(eventClassName, new ArrayList<ListenerInterface>());
 		}
-		this.output.println(
-				"EventManager.register(): Registeriere Event-Listner \""
+		this.logger.println(
+				"Registriere Event-Listener \""
 						+ listener.getClass().getSimpleName()
 						+ "\" for Event \""
 						+ eventClassName
@@ -59,13 +59,13 @@ public class EventManager {
 	 */
 	public void dispatch(EventInterface event) {
 		String eventName = event.getClass().getSimpleName();
-		this.output.println("EventManager.dispatch(): Dispatche Event \"" + eventName + "\"...");
+		this.logger.println("Dispatche Event \"" + eventName + "\"...");
 
 		ArrayList<ListenerInterface> eventListeners = listeners.get(eventName);
 
 		if (null == eventListeners) {
-			this.output.println(
-					"EventManager.dispatch(): Keine Listener für Event \""
+			this.logger.println(
+					"Keine Listener für Event \""
 							+ eventName
 							+ "\" gefunden."
 			);
@@ -74,15 +74,15 @@ public class EventManager {
 
 		for (ListenerInterface listener : eventListeners) {
 			if (null == listener) {
-				this.output.println(
-						"EventManager.dispatch(): Leerer Eintrag für Event \""
+				this.logger.println(
+						"Leerer Eintrag für Event \""
 								+ eventName
-								+ "\""
+								+ "\"."
 				);
 			}
 			else {
-				this.output.println(
-						"EventManager.dispatch(): Führe Event-Listener \""
+				this.logger.println(
+						"Führe Event-Listener \""
 								+ listener.getClass().getSimpleName()
 								+ "\" aus...");
 				try {
@@ -90,10 +90,10 @@ public class EventManager {
 					new Thread(listener).start();
 				} catch (Exception e) {
 
-					this.output.println(
-							"EventManager.dispatch(): Fehler beim Ausführen von Listener  \""
+					this.logger.println(
+							"Fehler! Ausführen von Listener \""
 									+ listener.getClass().getSimpleName()
-									+ "\" ("
+									+ "\" schlug fehl. ("
 									+ e.getMessage()
 									+ ")"
 					);

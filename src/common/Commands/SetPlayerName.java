@@ -1,7 +1,6 @@
 package common.Commands;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
+import common.Loggers.Logger;
 
 /**
  * Setzt den Spielernamen für die aktuelle Verbindung
@@ -10,18 +9,19 @@ import java.util.ArrayList;
  */
 public class SetPlayerName extends AbstractXmlCommand {
 
-    private final PrintStream output;
+    private final Logger logger;
 
-    public SetPlayerName(PrintStream output) {
+    public SetPlayerName(Logger logger) {
 
-        this.output = output;
+        this.logger = logger;
+        this.parameters.put("playerName", "");
     }
 
     @Override
     public void run() {
 
-        this.output.println(
-                "SetPlayerName.run(): Setzte Spielernamen von Verbindung "
+        this.logger.println(
+                "Setzte Spielernamen von Verbindung "
                         + this.connection.getUid()
                         + "..."
         );
@@ -30,7 +30,7 @@ public class SetPlayerName extends AbstractXmlCommand {
     }
 
     public CommandInterface setPlayerName(String playerName) {
-        this.parameters.add(0, playerName);
+        this.parameters.put("playerName", playerName);
         return this;
     }
 
@@ -38,6 +38,6 @@ public class SetPlayerName extends AbstractXmlCommand {
         if (this.parameters.isEmpty()) {
             return "";
         }
-        return this.parameters.get(0);
+        return this.parameters.get("playerName");
     }
 }

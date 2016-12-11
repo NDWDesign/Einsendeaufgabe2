@@ -1,25 +1,31 @@
 package client;
 
-import common.ApplicationState;
-import common.Factory;
+import common.Container;
+import common.CoreInterface;
+import common.Events.EventRegistryInterface;
+import common.Loggers.Logger;
 
 /**
  * Snake Klient
  */
 public class Client {
-    public static void main(String[] args) {
-        ApplicationState applicationState = new ApplicationState();
-        applicationState.setOutput(System.out);
-        applicationState.getOutput().println("Server.main(): Globaler Status erstellt.");
+	/**
+	 * ToDo Implementierung doppelt Server, nur mit anderem Namespace, wie ändern?
+	 *
+	 * @param args Nicht genutzt
+	 */
+	public static void main(String[] args) {
 
-        applicationState.getOutput().println("Client.main(): Erstelle Factory...");
-        Factory factory = new Factory(applicationState);
-        applicationState.setFactory(factory);
+		Container container = new Container();
+		container.setFactory(new Factory(container));
 
-        applicationState.getOutput().println("Client.main(): Registriere Events...");
-        new EventRegistry(factory, factory.createEventManager(false)).run();
+		Logger logger = container.get(Logger.class);
+		logger.println("Factory und Globaler Status erstellt.");
 
-        applicationState.getOutput().println("Server.main(): Starte ClientCore...");
-        factory.createClientCore(false).run();
-    }
+		logger.println("Registriere Events...");
+		container.get(EventRegistryInterface.class).run();
+
+		logger.println("Starte Core...");
+		container.get(CoreInterface.class).run();
+	}
 }

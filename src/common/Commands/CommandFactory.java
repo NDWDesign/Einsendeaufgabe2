@@ -1,8 +1,6 @@
-package common;
+package common.Commands;
 
-import common.Commands.*;
-
-import java.io.PrintStream;
+import common.Loggers.Logger;
 
 /**
  * CommandFactory - Erstellt eine neue Instanz eines Kommandos.
@@ -11,13 +9,11 @@ import java.io.PrintStream;
  */
 public class CommandFactory {
 
-    private final ApplicationState applicationState;
-    private final PrintStream output;
+    private final Logger logger;
 
-    CommandFactory(ApplicationState applicationState, PrintStream output) {
+    public CommandFactory(Logger logger) {
 
-        this.applicationState = applicationState;
-        this.output = output;
+        this.logger = logger;
     }
 
     /**
@@ -33,16 +29,16 @@ public class CommandFactory {
         CommandInterface command = null;
         try {
             if (commandName.equals(Disconnect.class.getSimpleName())) {
-                command = new Disconnect(this.applicationState.getOutput());
+                command = new Disconnect(this.logger);
 
             } else if (commandName.equals(SetPlayerName.class.getSimpleName())) {
-                command = new SetPlayerName(this.applicationState.getOutput());
+                command = new SetPlayerName(this.logger);
             } else if (commandName.equals(PingPong.class.getSimpleName())) {
-                command = new PingPong(this.applicationState.getOutput());
+                command = new PingPong(this.logger);
             }
 
         } catch (Exception e) {
-            applicationState.getOutput().println("CommandFactory.createCommand(): Fehler: \"" + commandName + "\" konnte nicht instantiiert werden!");
+            this.logger.println("Fehler! \"" + commandName + "\" konnte nicht instantiiert werden!");
             e.getStackTrace();
         }
 
