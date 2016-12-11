@@ -1,13 +1,15 @@
 package common;
 
+import common.Commands.CommandFactory;
 import common.Commands.CommandInterface;
 import common.Commands.CommandParserInterface;
 import common.Commands.Disconnect;
+import common.Loggers.Logger;
 
 import java.io.*;
 import java.net.Socket;
 import java.rmi.server.UID;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Connection - Managed die Verbindung zu einem Spieler
@@ -16,27 +18,25 @@ import java.util.ArrayList;
  */
 public class Connection extends Thread {
 
-	private final PrintStream output;
+	private final Logger logger;
 	private final UID uid;
 	private final CommandParserInterface commandParser;
 	private BufferedReader inputStream;
 	private PrintWriter outputStream;
 	private String playerName = "Default Player Name";
-	private ApplicationState applicationState;
 	private CommandFactory commandFactory;
+	private Long latency;
 
 	public Connection(
-			ApplicationState applicationState,
 			CommandFactory commandFactory,
 			CommandParserInterface commandParser,
-			PrintStream output,
+			Logger logger,
 			Socket socket
 	) throws IOException {
 		this.uid = new UID();
-		this.applicationState = applicationState;
 		this.commandFactory = commandFactory;
 		this.commandParser = commandParser;
-		this.output = output;
+		this.logger = logger;
 		this.inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		this.outputStream = new PrintWriter(socket.getOutputStream());
 	}
@@ -44,19 +44,19 @@ public class Connection extends Thread {
 	public void run() {
 
 		while (!this.isInterrupted()) {
-			this.output.println("Connection[" + this.uid + "].run(): Warte auf Kommando...");
+			this.logger.println("Warte auf Kommando...", this.uid);
 			try {
 				while (!this.commandParser.detectCommand(this.inputStream.readLine()) && !this.isInterrupted()) {
 				}
 			} catch (Exception e) {
-				this.output.println("Connection[" + this.uid + "].run(): Fehler beim Warten auf Kommando. Beende Thread...");
+				this.logger.println("Fehler! Beende Thread...", this.uid);
 				// Todo Thread beenden klappt nicht, prüfen.
 				this.interrupt();
 			}
 			if (this.commandParser.commandDetected()) {
 
-				this.output.println(
-						"Connection.run(): Kommando erkannt"
+				this.logger.println(
+						"Kommando erkannt"
 				);
 				this.processCommand(
 						this.commandParser.getCommandName(),
@@ -64,34 +64,34 @@ public class Connection extends Thread {
 				);
 			}
 			else {
-				this.output.println("Connection.run(): Kein Kommando erkannt");
+				this.logger.println("Kein Kommando erkannt.");
 			}
 			this.commandParser.flush();
 		}
-		this.output.println("Connection.run(): Thread unterbrochen, sende Disconnect");
-		this.send(new Disconnect(this.output));
+		this.logger.println("Thread unterbrochen, sende Disconnect Kommando...");
+		this.send(new Disconnect(this.logger));
 	}
 
 	/**
 	 * Führt im Input-Stream vorkommende Kommandos aus.
 	 */
-	private void processCommand(String commandName, ArrayList<String> parameters) {
+	private void processCommand(String commandName, HashMap<String, String> parameters) {
 
-		this.output.println(
+		this.logger.println(
 				"Connection[" + this.uid + "].processCommand(): \""
 						+ commandName
-						+ "\" wird ausgeführt. Parameter: "
-						+ parameters.toString()
+						+ "\" wird ausgeführt",
+				parameters.toString()
 		);
 
 		try {
 			this.commandFactory.createCommand(commandName)
+			                   .loadParameters(parameters)
 			                   .setConnection(this)
-			                   .setParameters(parameters)
 			                   .run();
 
 		} catch (Exception e) {
-			this.output.println(
+			this.logger.println(
 					"Connection[" + this.uid + "].processCommand(): Fehler! \""
 							+ commandName
 							+ "\" konnte nicht "
@@ -99,7 +99,7 @@ public class Connection extends Thread {
 							+ e.getClass().getSimpleName() + ": " + e.getMessage() + "\n"
 							+ ")"
 			);
-			e.printStackTrace(this.output);
+			e.printStackTrace();
 		}
 	}
 
@@ -109,7 +109,7 @@ public class Connection extends Thread {
 	 * @param command - Das Kommando das gesendet werden soll
 	 */
 	public void send(CommandInterface command) {
-		this.output.println(
+		this.logger.println(
 				"Connection[" + this.uid + "].send(): Sende Kommando \""
 						+ command.getClass().getSimpleName()
 						+ "\""
@@ -124,7 +124,7 @@ public class Connection extends Thread {
 
 	public void setPlayerName(String playerName) {
 
-		this.output.println(
+		this.logger.println(
 				"Connection[" + this.uid + "].setPlayerName: Setze Spielernamen \""
 						+ playerName
 						+ "\""
@@ -134,5 +134,14 @@ public class Connection extends Thread {
 
 	public UID getUid() {
 		return uid;
+	}
+
+	public void setLatency(Long latency) {
+
+		this.latency = latency;
+	}
+
+	public Long getLatency() {
+		return latency;
 	}
 }

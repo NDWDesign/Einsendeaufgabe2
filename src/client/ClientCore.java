@@ -1,33 +1,30 @@
 package client;
 
-import common.ApplicationState;
+import common.CoreInterface;
 import common.Events.ConnectionRequested;
 import common.Events.EventManager;
+import common.Loggers.Logger;
 
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.Socket;
 
 /**
- * Created by Nils Daniel Wittwer on 06.12.2016.
+ * ClientCore - Kern der  Klientanwendung
  */
-public class ClientCore implements Runnable {
+public class ClientCore extends Thread implements CoreInterface {
 
-    private final ApplicationState applicationState;
     private final EventManager eventManager;
-    private final PrintStream output;
+    private final Logger logger;
 
-    public ClientCore(ApplicationState applicationState, EventManager eventManager, PrintStream output) {
-        this.applicationState = applicationState;
+    public ClientCore(EventManager eventManager, Logger logger) {
         this.eventManager = eventManager;
-        this.output = output;
+        this.logger = logger;
     }
 
     @Override
     public void run() {
-
-        this.output.println(
-                "ClientCore.run(): Versuche Verbindung zu Server aufzubauen..."
+        this.logger.println(
+                "Versuche Verbindung zu Server aufzubauen..."
         );
 
         try {
@@ -35,8 +32,8 @@ public class ClientCore implements Runnable {
                     new ConnectionRequested(new Socket("localhost", 3000))
             );
         } catch (IOException e) {
-            this.output.println(
-                    "ClientCore.run(): Fehler: Verbindung zu Server konnte nicht hergestellt werden ("
+            this.logger.println(
+                    "Fehler! Verbindung zu Server konnte nicht hergestellt werden ("
                             + e.getMessage()
                             + ")"
             );

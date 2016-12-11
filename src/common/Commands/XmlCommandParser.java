@@ -1,7 +1,8 @@
 package common.Commands;
 
-import java.io.PrintStream;
-import java.util.ArrayList;
+import common.Loggers.Logger;
+
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,11 +12,11 @@ import java.util.regex.Pattern;
  */
 public class XmlCommandParser implements CommandParserInterface {
 
-	private final PrintStream output;
+	private final Logger logger;
 
-	public XmlCommandParser(PrintStream output) {
+	public XmlCommandParser(Logger logger) {
 
-		this.output = output;
+		this.logger = logger;
 	}
 
 	private String commandBuffer = "";
@@ -30,13 +31,10 @@ public class XmlCommandParser implements CommandParserInterface {
 	public boolean detectCommand(String string) {
 
 		this.commandBuffer += string;
-		this.output.println("XmlCommandParser.detectCommand(): Prüfe \""
-				+ this.commandBuffer
-				+ "\"..."
-		);
+		this.logger.println("Prüfe ", this.commandBuffer);
 		Boolean commandFound = this.commandDetected();
 		if (commandFound) {
-			this.output.println("XmlCommandParser.commandDetected(): Kommando wurde erkannt!");
+			this.logger.println("Kommando erkannt.");
 		}
 		return commandFound;
 	}
@@ -55,7 +53,7 @@ public class XmlCommandParser implements CommandParserInterface {
 	 */
 	public String getCommandName() {
 
-		Pattern pattern = Pattern.compile("(?i)<command.*name=\"(?<commandName>.*)\".*>");
+		Pattern pattern = Pattern.compile("(?i)<command.*?name=\"(?<commandName>.*?)\".*?>");
 		Matcher matcher = pattern.matcher(this.commandBuffer);
 		if (matcher.find()) {
 			return matcher.group("commandName");
@@ -66,14 +64,14 @@ public class XmlCommandParser implements CommandParserInterface {
 	/**
 	 * Liefert die Parameter des aktuellen Kommando-Puffers
 	 */
-	public ArrayList<String> getCommandParameters() {
-		//ToDo Da stimmt noch was mit der RegEx nicht.
-		Pattern pattern = Pattern.compile("(?i)(<parameter>)(?<parameterValue>.*?)(</parameter>)");
+	public HashMap<String, String> getCommandParameters() {
+		Pattern pattern = Pattern.compile(
+				"(?i)<parameter.*?=\"(?<parameterName>.*?)\">(?<parameterValue>.*?)</parameter>");
 		Matcher matcher = pattern.matcher(this.commandBuffer);
 
-		ArrayList<String> parameters = new ArrayList<String>();
+		HashMap<String, String> parameters = new HashMap<String, String>();
 		while (matcher.find()) {
-			parameters.add(matcher.group("parameterValue"));
+			parameters.put(matcher.group("parameterName"), matcher.group("parameterValue"));
 		}
 
 		return parameters;
@@ -84,6 +82,6 @@ public class XmlCommandParser implements CommandParserInterface {
 	 */
 	public void flush() {
 		this.commandBuffer = "";
-		this.output.println("XmlCommandParser.flush(): Puffer zurückgesetzt \"" + this.commandBuffer + "\"");
+		this.logger.println("Puffer zurückgesetzt.");
 	}
 }

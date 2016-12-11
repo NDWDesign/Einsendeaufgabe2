@@ -1,12 +1,15 @@
-package client.Listeners;
+package server.Listeners;
 
 import common.Commands.CommandFactory;
+import common.Commands.PingPong;
+import common.Commands.SetPlayerName;
+import common.Connection;
 import common.Events.ConnectionEstablished;
 import common.Events.EventInterface;
 import common.Listeners.ListenerInterface;
-import common.Commands.SetPlayerName;
-import common.Connection;
 import common.Loggers.Logger;
+
+import java.util.Date;
 
 /**
  * ConnectionEstablished Listener - Hört auf ConnectionEstablished Event
@@ -32,16 +35,9 @@ public class ConnectionEstablishedListener implements ListenerInterface {
     public void run() {
 
         Connection connection = this.event.getConnection();
-        this.logger.println(
-                "Sende Kommando \""
-                + SetPlayerName.class.getSimpleName()
-                + "\" an Verbindung ["
-                        + connection.getUid()
-                        + "]..."
-        );
 
-        ((SetPlayerName) this.commandFactory.createCommand(SetPlayerName.class.getSimpleName()))
-                .setPlayerName("My PlayerName")
+        ((PingPong) this.commandFactory.createCommand(PingPong.class.getSimpleName()))
+                .setSendTime(new Date().getTime())
                 .setConnection(connection)
                 .send();
     }

@@ -2,52 +2,61 @@ package common.Commands;
 
 import common.Connection;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by Nils Daniel Wittwer on 07.12.2016.
+ * Kodiert Kommandos in XML
  */
 abstract public class AbstractXmlCommand implements CommandInterface {
 
-    protected ArrayList<String> parameters = new ArrayList<String>();
-    protected Connection connection;
+	protected HashMap<String, String> parameters = new HashMap<String, String>();
+	protected Connection connection;
 
-    public String serialize() {
+	public String serialize() {
 
-        String commandString = "<command name=\""
-                + this.getClass().getSimpleName() +
-                "\">\n";
+		String commandString = "<command name=\""
+				+ this.getClass().getSimpleName() +
+				"\">";
 
-        if (!this.parameters.isEmpty()) {
-            for (String parameter : this.parameters) {
-                commandString += "     <parameter>"
-                        + parameter
-                        + "</parameter>";
-            }
-        }
+		if (!this.parameters.isEmpty()) {
+			for (Map.Entry<String, String> entry : this.parameters.entrySet()) {
+				commandString += "<parameter name=\""
+						+ entry.getKey() + "\">"
+						+ entry.getValue()
+						+ "</parameter>";
+			}
+		}
+		commandString += "</command>";
 
-        commandString += "</command>\n";
+		return commandString;
+	}
 
-        return commandString;
-    }
+	public CommandInterface loadParameters(HashMap<String, String> parameters) {
 
-    public CommandInterface setParameters(ArrayList<String> parameters) {
-        this.parameters = parameters;
+		System.out.println(parameters);
+		parameters.forEach(this::setParameter);
 
-        return this;
-    }
+		return this;
+	}
 
-    public CommandInterface setConnection(Connection connection) {
-        this.connection = connection;
-        return this;
-    }
+	private void setParameter(String parameterName, String parameterValue) {
 
-    public Connection getConnection() {
+		this.parameters.put(parameterName, parameterValue);
+	}
 
-        return this.getConnection();
-    }
+	public CommandInterface setConnection(Connection connection) {
 
-    public void send() {
-        this.connection.send(this);
-    }
+		this.connection = connection;
+		return this;
+	}
+
+	public Connection getConnection() {
+
+		return this.connection;
+	}
+
+	public void send() {
+		this.connection.send(this);
+	}
 }

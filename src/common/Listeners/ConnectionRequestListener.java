@@ -1,13 +1,11 @@
 package common.Listeners;
 
-import common.ApplicationState;
+import common.*;
 import common.Events.ConnectionEstablished;
 import common.Events.ConnectionRequested;
 import common.Events.EventInterface;
 import common.Events.EventManager;
-import common.Factory;
-import common.Connection;
-import common.Listeners.ListenerInterface;
+import common.Loggers.Logger;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,47 +17,50 @@ import java.io.PrintStream;
  */
 public class ConnectionRequestListener implements ListenerInterface {
 
-    private final Factory factory;
-    private final EventManager eventManager;
-    private final PrintStream output;
-    private ApplicationState applicationState;
-    private ConnectionRequested event;
+	private final Factory factory;
+	private final EventManager eventManager;
+	private final Logger logger;
+	private Connections connections;
+	private ConnectionRequested event;
 
-    public ConnectionRequestListener(ApplicationState applicationState, Factory factory, EventManager eventManager, PrintStream output) {
-        this.applicationState = applicationState;
-        this.factory = factory;
-        this.eventManager = eventManager;
-        this.output = output;
-    }
+	public ConnectionRequestListener(
+			Connections connections, Factory factory,
+			EventManager eventManager,
+			Logger logger
+	) {
+		this.connections = connections;
+		this.factory = factory;
+		this.eventManager = eventManager;
+		this.logger = logger;
+	}
 
-    public void run() {
+	public void run() {
 
-        try {
-            this.output
-                    .println("ConnectionRequestListener.run(): Versuche neue Verbingung zu etablieren...");
+		try {
+			this.logger
+					.println("Versuche neue Verbindung zu etablieren...");
 
-            Connection connection = this.factory.createConnection(
-                    this.event.getSocket(),
-                    true
-            );
+			Connection connection = this.factory.createConnection(
+					this.event.getSocket()
+			);
 
-            this.applicationState.getConnections().add(connection);
+			this.connections.add(connection);
 
-            this.output.println("ConnectionRequestListener.run(): Starte neue Verbindung");
-            new Thread(connection).start();
+			this.logger.println("Starte neue Verbindung");
+			connection.start();
 
-            this.eventManager.dispatch(
-                    new ConnectionEstablished(connection)
-            );
+			this.eventManager.dispatch(
+					new ConnectionEstablished(connection)
+			);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public ListenerInterface setEvent(EventInterface event) {
-        this.event = (ConnectionRequested) event;
-        return this;
-    }
+	@Override
+	public ListenerInterface setEvent(EventInterface event) {
+		this.event = (ConnectionRequested) event;
+		return this;
+	}
 }

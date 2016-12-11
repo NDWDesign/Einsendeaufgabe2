@@ -1,5 +1,8 @@
 package common;
 
+import common.Loggers.Logger;
+
+import java.io.PrintStream;
 import java.util.HashMap;
 
 /**
@@ -10,77 +13,64 @@ import java.util.HashMap;
  */
 public class Container {
 
-    /**
-     * Speichert Instanzen für angeforderte Klassen
-     **/
-    private HashMap instances = new HashMap<Class, Object>();
+	/**
+	 * Speichert Instanzen für angeforderte Klassen
+	 **/
+	private HashMap instances = new HashMap<Class, Object>();
 
-    /**
-     * Erstellt neue Instanzen
-     **/
-    private Factory factory;
+	/**
+	 * Erstellt neue Instanzen
+	 **/
+	private Factory factory;
 
 
-    public static void main(String[] argv) {
+	/**
+	 * Liefert die gespeicherte Instanz der angeforderten Klasse oder erstelle eine neue wenn keine vorhanden ist.
+	 **/
+	public <T> T get(Class<T> classType) {
+		if (!this.instances.containsKey(classType)) {
+			T instance = this.factory.create(classType);
+			if (null == instance) {
+				System.out.println(
+						"FEHLER!  Container.get(): \""
+								+ classType.getCanonicalName()
+								+ "\" in Factory \""
+								+ this.factory.getClass().getCanonicalName()
+								+ "\" nicht bekannt!"
+				);
+				return null;
+			}
+			this.instances.put(
+					classType,
+					instance
+			);
+		}
+		return (T) this.instances.get(classType);
+	}
 
-        // Neuen Container erstellen
-        Container container = new Container();
+	/**
+	 * Speichert die übergebenen Instanz.
+	 */
+	public void set(Object instance) {
+		this.instances.put(
+				instance.getClass(),
+				instance
+		);
+	}
 
-        // Instanz von Test anfordern
-        Test t1 = container.get(Test.class);
-        t1.value = 23;
+	/**
+	 * Speichert die übergebenen Instanz.
+	 */
+	public void set(Class classType, Object instance) {
+		this.instances.put(
+				classType,
+				instance
+		);
+	}
 
-        // Instanz von Test anfordern, sollte Instanz wie in t1 sein.
-        Test t2 = container.get(Test.class);
-        System.out.println("Diese beiden Werte sollten gleich sein: \nt1.value = " + t1.value + ", \nt2.value = " + t1.value);
-    }
-
-    /**
-     * Container referenziert eine Factory die neue Instanzen erstellt
-     **/
-    private Container() {
-        this.factory = new Factory();
-    }
-
-    /**
-     * Liefert die gespeicherte Instanz der angeforderten Klasse oder erstelle eine neue wenn keine vorhanden ist.
-     * <p>
-     * *****************************************************************************************************************
-     * **     Frage: Wie schreibe ich Parametertyp und Rückgabetyp so,                                                **
-     * **     dass nicht für jede Klasse eine Kopie dieser Methode benötigt wird?                                     **
-     * *****************************************************************************************************************
-     **/
-    private Test get(Class<Test> className) {
-        if (!this.instances.containsKey(className)) {
-            this.instances.put(className, this.factory.create(className));
-        }
-        return (Test) this.instances.get(className);
-    }
-
-    /**
-     * Erstellt neue Instanzen, hat eine Methode für jede Klasse
-     **/
-    private class Factory {
-
-        /**
-         * Methode um eine neue Instanz von Test zu erstellen
-         **/
-        Test create(Class<Test> testClass) {
-            return new Test();
-        }
-    }
-
-    /**
-     * Eine Beispiel-Klasse
-     */
-    private class Test {
-
-        int value = 0;
-
-        Test() {
-            System.out.println("Dieser Text sollte nur einmal ausgegeben werden!\n");
-        }
-    }
+	public void setFactory(Factory factory) {
+		this.factory = factory;
+	}
 }
 
 

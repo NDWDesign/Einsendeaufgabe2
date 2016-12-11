@@ -1,6 +1,6 @@
 package common.Commands;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * @author Nils Daniel Wittwer.
@@ -23,7 +23,7 @@ public interface CommandParserInterface {
     /**
      * @return Die im aktuellen Kommando-Puffer enthaltenen Parameter
      */
-    public ArrayList<String> getCommandParameters();
+    public HashMap<String, String> getCommandParameters();
 
     /**
      * Löscht den Kommando-Puffer

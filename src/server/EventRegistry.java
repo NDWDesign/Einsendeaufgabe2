@@ -1,39 +1,27 @@
 package server;
 
-import common.Commands.PingPong;
+import common.Container;
 import common.Events.ConnectionEstablished;
-import common.Events.ConnectionRequested;
 import common.Events.EventManager;
-import common.Factory;
-import common.Listeners.ListenerInterface;
+import server.Listeners.ConnectionEstablishedListener;
 
 /**
  * Server Event Registry - Initialisiert serverseitig benötigte Events
  */
-class EventRegistry implements Runnable {
+class EventRegistry extends common.Events.EventRegistry {
 
-    private final EventManager eventManager;
-    private final Factory factory;
+	public EventRegistry(Container container, EventManager eventManager) {
+		super(container, eventManager);
+	}
 
-    EventRegistry(Factory factory, EventManager eventManager) {
-        this.factory = factory;
-        this.eventManager = eventManager;
+	public void run() {
 
-    }
+		super.run();
 
-    public void run() {
+		eventManager.register(
+				ConnectionEstablished.class.getSimpleName(),
+				container.get(ConnectionEstablishedListener.class)
+		);
 
-        eventManager.register(ConnectionRequested.class.getSimpleName(),
-                factory.createClientConnectionHandler(false)
-        );
-        // Beim Zustandekommen einer Verbindung wird das PingPong-Kommando ausgeführt
-        eventManager.register(ConnectionEstablished.class.getSimpleName(),
-                (ListenerInterface) (
-                        (PingPong) factory.createCommandFactory(false)
-                                .createCommand(PingPong.class.getSimpleName()))
-                        .setCount(20)
-        );
-
-    }
-
+	}
 }
