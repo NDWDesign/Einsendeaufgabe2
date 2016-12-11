@@ -4,8 +4,8 @@ import common.Commands.CommandFactory;
 import common.Commands.CommandParserInterface;
 import common.Commands.XmlCommandParser;
 import common.Events.EventManager;
-import common.Loggers.Logger;
 import common.Listeners.ConnectionRequestListener;
+import common.Loggers.Logger;
 
 import java.io.IOException;
 import java.net.Socket;

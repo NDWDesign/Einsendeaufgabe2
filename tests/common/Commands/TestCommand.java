@@ -1,7 +1,5 @@
 package common.Commands;
 
-import java.util.ArrayList;
-
 /**
  * Einsendeaufgabe2 08.12.2016
  *

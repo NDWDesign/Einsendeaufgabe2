@@ -26,7 +26,7 @@ public class ClientCore extends Thread implements CoreInterface {
         this.logger.println(
                 "Versuche Verbindung zu Server aufzubauen..."
         );
-
+        // ToDo: Socket-Erstellung in Factory auslagern.
         try {
             this.eventManager.dispatch(
                     new ConnectionRequested(new Socket("localhost", 3000))

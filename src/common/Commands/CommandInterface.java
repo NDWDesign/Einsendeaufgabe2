@@ -2,7 +2,6 @@ package common.Commands;
 
 import common.Connection;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

@@ -1,14 +1,15 @@
 package common.Listeners;
 
-import common.*;
+import common.Connection;
+import common.Connections;
 import common.Events.ConnectionEstablished;
 import common.Events.ConnectionRequested;
 import common.Events.EventInterface;
 import common.Events.EventManager;
+import common.Factory;
 import common.Loggers.Logger;
 
 import java.io.IOException;
-import java.io.PrintStream;
 
 /**
  * ConnectionRequestListener - Reagiert auf neue Netzwerkverbindungen.

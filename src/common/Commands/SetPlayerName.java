@@ -2,8 +2,6 @@ package common.Commands;
 
 import common.Loggers.Logger;
 
-import java.io.PrintStream;
-
 /**
  * Setzt den Spielernamen für die aktuelle Verbindung
  *

@@ -1,11 +1,11 @@
 package client.Listeners;
 
 import common.Commands.CommandFactory;
+import common.Commands.SetPlayerName;
+import common.Connection;
 import common.Events.ConnectionEstablished;
 import common.Events.EventInterface;
 import common.Listeners.ListenerInterface;
-import common.Commands.SetPlayerName;
-import common.Connection;
 import common.Loggers.Logger;
 
 /**

@@ -6,7 +6,10 @@ import common.Commands.CommandParserInterface;
 import common.Commands.Disconnect;
 import common.Loggers.Logger;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.server.UID;
 import java.util.HashMap;
@@ -42,7 +45,7 @@ public class Connection extends Thread {
 	}
 
 	public void run() {
-
+		// Todo Prüfen ob Kommandos gesendet werden können während auf Eingaben gewartet wird.
 		while (!this.isInterrupted()) {
 			this.logger.println("Warte auf Kommando...", this.uid);
 			try {
@@ -50,7 +53,6 @@ public class Connection extends Thread {
 				}
 			} catch (Exception e) {
 				this.logger.println("Fehler! Beende Thread...", this.uid);
-				// Todo Thread beenden klappt nicht, prüfen.
 				this.interrupt();
 			}
 			if (this.commandParser.commandDetected()) {
@@ -85,6 +87,8 @@ public class Connection extends Thread {
 		);
 
 		try {
+
+			// Todo: Prüfen ob Kommandos als Thread ausgeführt werden können.
 			this.commandFactory.createCommand(commandName)
 			                   .loadParameters(parameters)
 			                   .setConnection(this)

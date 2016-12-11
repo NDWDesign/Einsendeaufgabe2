@@ -1,7 +1,5 @@
 package common.Events;
 
-import common.Events.ConnectionRequested;
-
 /**
  * Registriert Events
  *

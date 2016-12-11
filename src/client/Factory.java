@@ -4,7 +4,6 @@ import client.Listeners.ConnectionEstablishedListener;
 import common.Commands.CommandFactory;
 import common.Container;
 import common.Events.EventManager;
-import common.Listeners.ListenerInterface;
 import common.Loggers.Logger;
 
 /**
