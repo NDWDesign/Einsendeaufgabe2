@@ -30,11 +30,12 @@ public class CommandFactory {
         try {
             if (commandName.equals(Disconnect.class.getSimpleName())) {
                 command = new Disconnect(this.logger);
-
             } else if (commandName.equals(SetPlayerName.class.getSimpleName())) {
                 command = new SetPlayerName(this.logger);
             } else if (commandName.equals(PingPong.class.getSimpleName())) {
                 command = new PingPong(this.logger);
+            } else if (commandName.equals(DisplayMessage.class.getSimpleName())) {
+                command = new DisplayMessage(this.logger);
             }
 
         } catch (Exception e) {

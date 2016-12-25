@@ -1,5 +1,7 @@
 package common.Game;
 
+import com.sun.javafx.geom.Vec2d;
+
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -17,16 +19,12 @@ public class Worm {
     private LinkedList<Vector<Float>> segments;
 
 
-    public Worm(String name, float startPosX, float startPosY, int elements) {
+    public Worm(String name, Vector<Float> startPos, int elements) {
         this.name = name;
 
         Vector<Float> direction = new Vector<>();
         direction.add(1f);
         direction.add(0f);
-
-        Vector<Float> startPos = new Vector<>();
-        startPos.add(startPosX);
-        startPos.add(startPosY);
 
         LinkedList<Vector<Float>> segments = new LinkedList<>();
         for (int i = 0; i < elements; i++) {
