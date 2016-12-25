@@ -118,7 +118,9 @@ public class Connection extends Thread {
 						+ command.getClass().getSimpleName()
 						+ "\""
 		);
-		outputStream.println(command.serialize());
+		outputStream.println(
+				this.commandParser.serialize(command)
+		);
 		outputStream.flush();
 	}
 

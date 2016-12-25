@@ -22,7 +22,7 @@ public class XmlCommandParserTest {
 		testCommand.loadParameters(expectedParameters);
 
 		System.out.print("Teste XmlCommandParser.detectCommand(): ");
-		if (!commandParser.detectCommand(testCommand.serialize())) {
+		if (!commandParser.detectCommand(commandParser.serialize(testCommand))) {
 			System.out.println("Fehler! Gültiges Kommando wurde nicht erkannt!");
 		}
 		else {

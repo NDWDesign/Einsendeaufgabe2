@@ -5,7 +5,7 @@ package common.Commands;
  *
  * @author Nils Daniel Wittwer
  */
-public class TestCommand extends AbstractXmlCommand {
+public class TestCommand extends AbstractCommand {
 	@Override
 	public void run() {
 

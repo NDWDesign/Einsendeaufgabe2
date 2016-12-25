@@ -7,7 +7,7 @@ import common.Loggers.Logger;
  *
  * @author Nils Daniel Wittwer
  */
-public class Disconnect extends AbstractXmlCommand {
+public class Disconnect extends AbstractCommand {
 
     private final Logger logger;
 

@@ -3,6 +3,7 @@ package common.Commands;
 import common.Loggers.Logger;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,6 +78,31 @@ public class XmlCommandParser implements CommandParserInterface {
 		return parameters;
 	}
 
+	/**
+	 * Serialisiert ein Kommando als XML-String
+	 *
+	 * @param command Das zu serialisierende Kommando
+	 * @return XML-Repräsentation des Kommandos
+	 */
+	public String serialize(CommandInterface command) {
+
+		String commandString = "<command name=\""
+				+ command.getClass().getSimpleName() +
+				"\">";
+
+		HashMap<String, String> parameters = command.getParameters();
+		if (!parameters.isEmpty()) {
+			for (Map.Entry<String, String> entry : parameters.entrySet()) {
+				commandString += "<parameter name=\""
+						+ entry.getKey() + "\">"
+						+ entry.getValue()
+						+ "</parameter>";
+			}
+		}
+		commandString += "</command>";
+
+		return commandString;
+	}
 	/**
 	 * Löscht den aktuellen Kommando-Puffer
 	 */

@@ -34,4 +34,11 @@ public interface CommandParserInterface {
      * @return true: Es wurde ein Kommando erkannt
      */
     boolean commandDetected();
+
+    /**
+     * Serialisiert ein Kommando
+     * @param command
+     * @return
+     */
+    public String serialize(CommandInterface command);
 }

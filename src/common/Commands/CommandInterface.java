@@ -22,13 +22,6 @@ public interface CommandInterface {
     void send();
 
     /**
-     * Serialisiert eine Kommando so das es über einen Stream gesendet werden kann.
-     *
-     * @return Das serialisierte Kommando
-     */
-    String serialize();
-
-    /**
      * Lädt die übergebenen Parameter in das Kommando
      *
      * @param parameters Die Parameter die in das Kommando geladen werden sollen.
@@ -37,6 +30,11 @@ public interface CommandInterface {
     CommandInterface loadParameters(
             HashMap<String, String> parameters
     );
+
+    /**
+     * @return Die Parameter des Kommandos
+     */
+    HashMap<String, String> getParameters();
 
     /**
      * Setzt die Verbindung zu der das Kommando gehört

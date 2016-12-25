@@ -7,7 +7,7 @@ import common.Loggers.Logger;
  *
  * @author Nils Daniel Wittwer
  */
-public class SetPlayerName extends AbstractXmlCommand {
+public class SetPlayerName extends AbstractCommand {
 
     private final Logger logger;
 

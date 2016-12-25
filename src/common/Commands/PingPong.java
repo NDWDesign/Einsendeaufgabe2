@@ -13,7 +13,7 @@ import java.util.Date;
  * @author Nils Daniel Wittwer.
  * @version 07.12.2016
  */
-public class PingPong extends AbstractXmlCommand implements ListenerInterface {
+public class PingPong extends AbstractCommand implements ListenerInterface {
 
 	private final Logger logger;
 
